@@ -37,3 +37,5 @@ if (!session) {
     }
   } catch(e) { $('index-status').textContent=`Status indisponível: ${e.message}`; }
 }
+
+if (!session) { $('retry-entry').hidden=false; $('retry-entry').onclick=()=>location.reload(); }

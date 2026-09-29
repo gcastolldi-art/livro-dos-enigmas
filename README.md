@@ -1,6 +1,16 @@
-# Livro dos Enigmas v2
+# Livro dos Enigmas v2.1
 
 Site estático para GitHub Pages com índice direto, páginas independentes e primeira resposta por equipe registrada no Google Sheets. A ilustração da princesa guardiã serviu como referência visual; ela continua na etapa anterior da história. Os enigmas incluídos são exemplos substituíveis.
+
+## Correção da conexão (v2.1)
+
+O backend agora registra o ID da planilha em `configurarLivro` e usa `openById` no aplicativo web. O frontend espera até 30 segundos, repete uma consulta que exceder o prazo e distingue carregamento inválido de timeout. Não há reenvio automático de respostas.
+
+1. Substitua `Code.gs` no editor vinculado à planilha e execute `configurarLivro` novamente. Seus códigos de equipes e respostas existentes são preservados.
+2. Em **Implantar > Gerenciar implantações > Editar**, selecione **Nova versão**, **Executar como: Eu**, acesso **Qualquer pessoa**, e implante.
+3. Abra a URL `/exec` diretamente em uma janela anônima. Deve aparecer `{"ok":true,"version":"2.1","message":"Conexão com a planilha funcionando."}`. Pedido de login indica uma restrição de acesso; versão diferente indica uma implantação antiga; `ok:false` traz o erro para corrigir.
+4. Atualize os arquivos do site, mantendo sua `API_URL` em `js/config.js`. Use a URL publicada terminada em `/exec`, sem parâmetros e sem barra extra.
+5. Se a URL do backend funciona diretamente, mas o site falha, abra o console do navegador (F12) e confira se a requisição ao Apps Script está sendo bloqueada. O retorno usa um redirecionamento para `script.googleusercontent.com`.
 
 ## 1. Atualizar a planilha e o Apps Script
 

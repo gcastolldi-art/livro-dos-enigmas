@@ -14,7 +14,7 @@ $('prev').textContent=pos===0?'':'← Anterior';
 $('next').href=pos===config.length-1?'../../index.html':`../${config[pos+1].pasta}/`;
 $('next').textContent=pos===config.length-1?'':'Próximo →';
 $('index-link').href='../../index.html';
-let locked=false;
+let locked=false, checking=false;
 function display(status) {
   locked=!!status.submitted;
   $('lock-banner').hidden=!locked;
@@ -24,12 +24,14 @@ function display(status) {
   document.dispatchEvent(new CustomEvent('book:lock',{detail:{locked}}));
 }
 export async function refreshStatus() {
-  if (!session) return;
+  if (!session || checking) return;
+  checking=true;
   try {
     const result=await query('status',{team:session.team,code:session.code,enigmaId:id});
     if (!result.ok) throw new Error(result.error);
     display(result);
   } catch(e) { $('message').textContent=`Status indisponível: ${e.message}`; $('submit-answer').disabled=true; }
+  finally { checking=false; }
 }
 export async function send(answer) {
   if (locked) return;

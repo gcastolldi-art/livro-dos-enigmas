@@ -16,4 +16,4 @@ list.addEventListener('drop',e=>{
   e.preventDefault();const target=e.target.closest('li');if(!dragged||!target||target===dragged||locked)return;
   const items=[...list.children];list.insertBefore(dragged,items.indexOf(dragged)<items.indexOf(target)?target.nextElementSibling:target);
 });
-document.getElementById('submit-answer').onclick=()=>send({valor:[...list.children].map(item=>item.dataset.value)});
+document.getElementById('submit-answer').onclick=()=>send({tipo:'ordem',valor:[...list.children].map(item=>item.dataset.value)});

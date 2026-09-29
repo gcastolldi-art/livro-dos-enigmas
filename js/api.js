@@ -6,23 +6,32 @@ export const clearSession = () => sessionStorage.removeItem(STORAGE_KEY);
 
 // O retorno JSONP permite consulta a um Apps Script hospedado em outro domínio.
 // Nenhum conteúdo fornecido por jogadores é tratado como código pelo callback.
-export function query(action, fields = {}) {
-  if (!API_URL) return Promise.reject(new Error('Configure API_URL em js/config.js para ativar o jogo.'));
+function queryOnce(action, fields = {}) {
+  if (!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/.test(API_URL)) return Promise.reject(new Error('Configure API_URL com a URL publicada do Apps Script, terminada em /exec.'));
   return new Promise((resolve, reject) => {
     const callback = `__bookCallback_${Date.now()}_${Math.floor(Math.random()*1e6)}`;
     const script = document.createElement('script');
-    const timer = setTimeout(() => finish(new Error('Tempo esgotado ao consultar o servidor.')), 12000);
+    const timer = setTimeout(() => finish(Object.assign(new Error('O Apps Script não respondeu em 30 segundos. Confira a implantação e tente novamente.'),{retryable:true})), 30000);
     let done = false;
     function finish(error, result) {
       if (done) return; done = true; clearTimeout(timer); script.remove(); delete window[callback];
       error ? reject(error) : resolve(result);
     }
     window[callback] = result => finish(null, result);
-    script.onerror = () => finish(new Error('Não foi possível consultar o servidor.'));
+    script.onerror = () => finish(new Error('O navegador não conseguiu carregar o Apps Script. Confira acesso para Qualquer pessoa, a URL /exec e a versão publicada.'));
+    script.onload = () => { if (!done) finish(new Error('O Apps Script carregou, mas não retornou o formato esperado. Publique a nova versão de Code.gs.')); };
     const url = new URL(API_URL);
     Object.entries({action, gameId:GAME_ID, ...fields, callback}).forEach(([key,val]) => url.searchParams.set(key,val));
     script.src = url.toString(); document.head.append(script);
   });
+}
+
+export async function query(action, fields = {}) {
+  try { return await queryOnce(action,fields); }
+  catch(error) {
+    if (!error.retryable) throw error;
+    return queryOnce(action,fields);
+  }
 }
 
 export async function submitAnswer(enigmaId, answer) {

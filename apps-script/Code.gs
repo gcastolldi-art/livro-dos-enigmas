@@ -7,7 +7,10 @@ const TEAMS = ['Vermelho','Laranja','Amarelo','Verde','Azul','Marinho','Roxo','R
 const HEADERS = ['Partida','Equipe','Enigma','Jogador','Resposta JSON','Registrado em','ID do envio','Resultado','Pontos'];
 
 function configurarLivro() {
-  const ss=SpreadsheetApp.getActiveSpreadsheet();
+  const active=SpreadsheetApp.getActiveSpreadsheet();
+  if (!active) throw new Error('Abra este Apps Script pela planilha e execute configurarLivro.');
+  PropertiesService.getScriptProperties().setProperty('BOOK_SPREADSHEET_ID',active.getId());
+  const ss=SpreadsheetApp.openById(active.getId());
   let answers=ss.getSheetByName('Respostas');
   if (!answers) answers=ss.insertSheet('Respostas');
   if (answers.getLastRow()===0) answers.appendRow(HEADERS);
@@ -36,9 +39,24 @@ function configurarLivro() {
   answers.setFrozenRows(1); teams.setFrozenRows(1); enigmas.setFrozenRows(1); key.setFrozenRows(1);
 }
 
+function livroSpreadsheet_() {
+  const id=PropertiesService.getScriptProperties().getProperty('BOOK_SPREADSHEET_ID');
+  if (!id) throw new Error('Execute configurarLivro no editor antes de publicar a nova versão.');
+  return SpreadsheetApp.openById(id);
+}
+
 function doGet(e) {
-  const p=e.parameter||{};
+  const p=(e&&e.parameter)||{};
   const callback=p.callback||'';
+  if (!callback) {
+    let health;
+    try {
+      const ss=livroSpreadsheet_();
+      const ready=['Equipes','Enigmas','Respostas','Gabarito'].every(name=>!!ss.getSheetByName(name));
+      health={ok:ready,version:'2.1',message:ready?'Conexão com a planilha funcionando.':'Execute configurarLivro para criar as abas.'};
+    } catch(error) {health={ok:false,version:'2.1',error:String(error.message||error)};}
+    return ContentService.createTextOutput(JSON.stringify(health)).setMimeType(ContentService.MimeType.JSON);
+  }
   if (!/^__bookCallback_[0-9]+_[0-9]+$/.test(callback))
     return ContentService.createTextOutput('Callback inválido').setMimeType(ContentService.MimeType.TEXT);
   let result;
@@ -59,7 +77,7 @@ function doPost(e) {
 function requireTeam_(p) {
   const team=String(p.team||''), code=String(p.code||'').trim().toUpperCase();
   if (!TEAMS.includes(team)||!code) throw new Error('Equipe ou código inválido.');
-  const sh=SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Equipes');
+  const sh=livroSpreadsheet_().getSheetByName('Equipes');
   if (!sh) throw new Error('Execute configurarLivro primeiro.');
   const rows=sh.getDataRange().getValues();
   if (!rows.slice(1).some(r=>r[0]===team&&String(r[1]).trim().toUpperCase()===code))
@@ -69,7 +87,7 @@ function requireTeam_(p) {
 
 function validEnigma_(id) {
   if (!/^[a-z0-9-]{1,60}$/.test(id)) return false;
-  const sh=SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Enigmas');
+  const sh=livroSpreadsheet_().getSheetByName('Enigmas');
   if (!sh) return false;
   return sh.getDataRange().getValues().slice(1).some(r=>r[0]===id&&r[1]!==false&&String(r[1]).toUpperCase()!=='FALSE');
 }
@@ -80,7 +98,7 @@ function status_(p) {
   if (!/^[a-z0-9-]{1,60}$/.test(gameId)) throw new Error('Partida inválida.');
   const id=String(p.enigmaId||'');
   if (id&&!validEnigma_(id)) throw new Error('Enigma inválido.');
-  const sh=SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Respostas');
+  const sh=livroSpreadsheet_().getSheetByName('Respostas');
   const rows=sh.getDataRange().getValues().slice(1);
   if (id) {
     const row=rows.find(r=>r[0]===gameId&&r[1]===team&&r[2]===id);
@@ -101,7 +119,7 @@ function normalize_(value) {
 }
 
 function grade_(id,answer) {
-  const sh=SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Gabarito');
+  const sh=livroSpreadsheet_().getSheetByName('Gabarito');
   if(!sh) return {result:'PENDENTE',points:0};
   const row=sh.getDataRange().getValues().slice(1).find(r=>String(r[0])===id);
   if(!row||!row[2]||String(row[1]).toLowerCase()==='manual') return {result:'PENDENTE',points:0};
@@ -115,7 +133,7 @@ function grade_(id,answer) {
 
 // Execute após corrigir um gabarito para atualizar também respostas já gravadas.
 function recalcularGabarito() {
-  const sh=SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Respostas');
+  const sh=livroSpreadsheet_().getSheetByName('Respostas');
   if (!sh||sh.getLastRow()<2) return;
   const rows=sh.getRange(2,1,sh.getLastRow()-1,HEADERS.length).getValues();
   const grades=rows.map(r=>{
@@ -137,7 +155,7 @@ function submit_(p) {
   const lock=LockService.getScriptLock();
   lock.waitLock(15000);
   try {
-    const sh=SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Respostas');
+    const sh=livroSpreadsheet_().getSheetByName('Respostas');
     const rows=sh.getDataRange().getValues().slice(1);
     const existing=rows.find(r=>r[0]===gameId&&r[1]===team&&r[2]===id);
     if(existing) return {ok:true,accepted:false};
