@@ -1,47 +1,62 @@
-# Livro dos Enigmas
+# Livro dos Enigmas v2
 
-Projeto inicial para GitHub Pages com capa, índice automático, três enigmas piloto e respostas no Google Sheets. A imagem da guardiã foi usada com autorização como prólogo. O projeto não contém gabarito público: respostas são registradas para conferência na planilha.
+Site estático para GitHub Pages com índice direto, páginas independentes e primeira resposta por equipe registrada no Google Sheets. A ilustração da princesa guardiã serviu como referência visual; ela continua na etapa anterior da história. Os enigmas incluídos são exemplos substituíveis.
 
-## 1. Preparar o Google Sheets
+## 1. Atualizar a planilha e o Apps Script
 
-1. Crie uma planilha Google chamada `Livro dos Enigmas - Respostas`.
-2. Abra **Extensões > Apps Script**. Substitua o conteúdo de `Code.gs` pelo conteúdo de `apps-script/Code.gs` deste pacote.
-3. Salve e execute `configurarLivro` uma vez. Autorize as permissões solicitadas pelo Google.
-4. Volte à planilha. A aba **Equipes** traz os códigos individuais. Entregue cada código apenas ao grupo correspondente. Não publique a planilha nem esses códigos no GitHub.
-5. Em **Implantar > Nova implantação > Aplicativo da Web**, configure **Executar como: Eu** e **Quem pode acessar: Qualquer pessoa**. Copie a URL terminada em `/exec`.
-6. Cole essa URL entre aspas em `js/config.js`, no valor `API_URL`. Não coloque códigos de equipes nesse arquivo.
+1. Se já instalou a v1, abra o Apps Script vinculado à mesma planilha e substitua **todo** o `Code.gs` pelo conteúdo de `apps-script/Code.gs`. Se ainda não instalou, crie uma planilha Google e abra **Extensões > Apps Script** para colar o arquivo.
+2. Salve e execute `configurarLivro` uma vez. Isso cria ou atualiza as abas **Respostas**, **Equipes**, **Enigmas** e **Gabarito** sem apagar as respostas existentes.
+3. Confira os códigos na aba **Equipes**. A lista oficial de 12 equipes inclui **Turquesa, Golfinho**. Se instalou a v1, a linha antiga **Cinza** pode permanecer na aba; ela não será aceita nesta versão. A nova linha Turquesa recebe um código próprio.
+4. Se já havia publicado o aplicativo web, use **Implantar > Gerenciar implantações > Editar > Nova versão**. Copie a URL `/exec`. Em uma instalação nova, use **Implantar > Nova implantação > Aplicativo da Web**, com **Executar como: Eu** e **Quem pode acessar: Qualquer pessoa**.
+5. Cole a URL `/exec` entre aspas no valor `API_URL` em `js/config.js`.
 
-O acesso público ao aplicativo web é necessário para que os celulares enviem respostas sem login Google. A equipe é identificada por seu código compartilhado. O Apps Script usa uma trava ao verificar e gravar para aceitar somente a primeira resposta de cada combinação partida + equipe + enigma. A planilha é a fonte definitiva; o estado mostrado no celular é uma consulta periódica.
+Mantenha privadas as abas **Equipes** e **Gabarito**. O código de cada equipe só deve ser entregue ao grupo correspondente. O backend usa `LockService` para conferir e gravar a primeira resposta sob trava.
 
-## 2. Testar antes de publicar
+## 2. Configurar o gabarito
 
-1. Inicie um servidor estático na raiz do projeto: `python3 -m http.server 8000`.
-2. Acesse `http://localhost:8000/` (não abra os arquivos por `file://`, pois o navegador precisa carregar `enigmas.json`).
-3. Entre com nome, equipe e código da aba Equipes. Envie uma resposta.
-4. Confira uma linha nova na aba Respostas. Com outro navegador ou celular usando o mesmo código, tente responder o mesmo enigma. O segundo envio deve ser rejeitado e a página deve mostrar o bloqueio.
-5. Repita com duas pessoas enviando ao mesmo tempo. Em seguida, teste duas equipes diferentes na mesma questão.
+A aba **Gabarito** tem as colunas `ID do enigma`, `Tipo`, `Resposta(s) aceita(s)`, `Pontos`, `Observações`.
 
-## 3. Publicar no GitHub Pages
+| Tipo | Exemplo na coluna Resposta(s) aceita(s) | Regra |
+| --- | --- | --- |
+| `escolha` | `labirinto` | Valor da alternativa selecionada, não seu texto visível. |
+| `texto` | `livro|o livro` | Aceita qualquer opção separada por `|`; ignora maiúsculas, acentos e espaços repetidos. |
+| `ordem` | `eclipse,estrela,livro` | IDs das peças na ordem correta, separados por vírgula. |
+| `manual` | deixe em branco | Registra `PENDENTE` para conferência da organização. |
 
-Envie o conteúdo desta pasta para a raiz de um repositório GitHub. Em **Settings > Pages > Build and deployment**, selecione **Deploy from a branch**, a branch principal e a pasta `/ (root)`. O site será publicado no endereço indicado pelo GitHub. Todos os caminhos de imagens, CSS e JS são relativos e funcionam também em repositórios de projeto (`usuario.github.io/nome-do-repositorio/`).
+O gabarito piloto corresponde às perguntas piloto. Ao substituir uma pergunta, **atualize também seu gabarito antes de liberar os links**. Não coloque respostas corretas em HTML, JavaScript ou JSON do GitHub Pages.
 
-O arquivo `apps-script/Code.gs` pode permanecer no repositório porque não contém os códigos das equipes. A planilha deve continuar privada. Para uma nova edição do jogo, altere `GAME_ID` em `js/config.js`; assim os registros de partidas anteriores permanecem separados.
+A aba **Respostas** mostra o JSON enviado, `Resultado` (`CORRETA`, `INCORRETA` ou `PENDENTE`) e `Pontos`. A primeira resposta bloqueia a equipe mesmo se estiver incorreta. Se corrigir um gabarito após receber respostas, execute `recalcularGabarito` no Apps Script para atualizar resultados antigos. O resultado não é mostrado aos jogadores.
 
-## 4. Adicionar ou remover enigmas
+## 3. Criar links individuais por equipe
 
-1. Copie uma das pastas em `enigmas/` para uma nova pasta numérica ou com nome único.
-2. Troque `data-enigma` no `body` da página e crie uma entrada correspondente em `enigmas.json` com o mesmo `id`, além de `titulo`, `pasta`, `tipo` e `ativo`.
-3. Na planilha, inclua o novo ID na aba **Enigmas**, coluna A, e `TRUE` na coluna B. Não execute `configurarLivro` para essa inclusão.
-4. Desenvolva a interação própria no `enigma.js`. Ao enviar, use `send({tipo:'nome-do-tipo',valor:...})` importado de `../../js/livro.js`.
-5. Para retirar um enigma do índice, defina `ativo:false` no JSON e `FALSE` na aba Enigmas. Nunca reutilize o ID de um enigma para outro desafio.
+A página `index.html` já é o índice. O desafio anterior deve encaminhar para um URL no formato:
 
-O índice e o contador `N de X` são gerados de `enigmas.json`. O rodapé Anterior/Próximo também segue essa ordem. Respostas já enviadas continuam na planilha mesmo após desativar uma página.
+```text
+https://SEU-USUARIO.github.io/SEU-REPOSITORIO/#equipe=Vermelho&codigo=CODIGO-DA-ABA-EQUIPES
+```
 
-## Limites e decisões para a próxima versão
+Troque o nome e o código para cada uma das 12 equipes. Para Turquesa, por exemplo, use `#equipe=Turquesa&codigo=...`. A equipe e o código seguem no fragmento `#` do endereço, que o GitHub Pages não recebe. Após validar, o site remove o fragmento da barra e mantém a sessão nesta aba do navegador. Ao abrir o link em outro celular, os integrantes da mesma equipe terão acesso independente, com o mesmo bloqueio de resposta. O campo **Jogador** da planilha será preenchido automaticamente com o mascote oficial: Fênix, Tigre, Leão, Camaleão, Águia, Tubarão, Coruja, Flamingo, Urso, Golfinho, Pantera Negra ou Pégasus.
 
-- Os três enigmas são **páginas piloto** e devem ser substituídos pelas perguntas definitivas. A imagem anexada já compõe a capa.
-- O código é compartilhado entre integrantes da equipe. Quem conhecer esse código poderá enviar uma resposta pela equipe; distribuição e sigilo ficam com a organização.
-- A primeira resposta recebida bloqueia a questão, independentemente de estar certa. Não há gabarito ou pontuação automática nesta base.
-- O Apps Script informa o bloqueio em consultas periódicas. Quem estiver digitando em outro celular poderá ver a mensagem alguns segundos depois; a trava do servidor decide qual envio vale.
-- Em perda de rede após o clique, não envie de novo às cegas: a interface consulta o servidor e só confirma o que foi gravado. Consulte a aba Respostas se a conexão continuar falhando.
-- A consulta é feita por JSONP e exige o código da equipe. Este modelo é adequado para uma gincana recreativa com códigos distribuídos; para autenticação forte, placar ao vivo intenso ou muitos acessos simultâneos, migre o serviço de respostas para um backend próprio com banco transacional.
+Não divulgue esses links em uma página pública: quem tiver um link poderá responder por aquela equipe. O link da etapa anterior deve encaminhar apenas ao endereço da equipe apropriada.
+
+## 4. Publicar e testar
+
+Envie o conteúdo da pasta `livro-dos-enigmas/` à raiz do repositório. Em **Settings > Pages**, publique pela branch principal e pasta `/ (root)`. Os caminhos relativos funcionam no endereço `usuario.github.io/repositorio/`.
+
+Antes de publicar, pode executar `python3 -m http.server 8000` na pasta e abrir `http://localhost:8000/#equipe=Vermelho&codigo=...`. É necessário preencher `API_URL` e implantar o Apps Script até mesmo no teste local. Teste dois celulares com a mesma equipe enviando ao mesmo tempo: apenas uma linha deve ser aceita por enigma. Confira também que uma segunda equipe consegue responder à mesma questão e que o índice mostra o estado respondido.
+
+## 5. Adicionar um novo enigma
+
+1. Copie uma pasta de `enigmas/` e crie o HTML e JS próprios da nova interação.
+2. Defina um `data-enigma` único no HTML e inclua uma linha em `enigmas.json` com o mesmo `id`, `titulo`, `pasta`, `tipo` e `ativo:true`.
+3. Na aba **Enigmas**, inclua o mesmo ID e `TRUE`. Na aba **Gabarito**, inclua o tipo, a resposta correta e os pontos. Para uma correção subjetiva, use `manual`.
+4. No JS da página, importe `send` de `../../js/livro.js` e envie `{tipo:'...', valor:...}`. Novos formatos podem ter sua própria interface e usar `PENDENTE` até que a validação específica seja implementada no backend.
+
+A ordem no JSON determina o índice, o contador `N de X` e os links Anterior/Próximo. Cada página inclui o link central **Índice** no rodapé. Para desativar, use `ativo:false` no JSON e `FALSE` na aba Enigmas. IDs antigos nunca devem ser reutilizados.
+
+## Observações operacionais
+
+- O código da equipe funciona como uma credencial compartilhada; não identifica a pessoa que clicou. A coluna Jogador registra o mascote, conforme solicitado.
+- O Apps Script é consultado a cada oito segundos nas páginas de enigmas. O bloqueio visual pode demorar um instante, mas a trava no servidor decide qual resposta é válida.
+- A v2 exige reimplantar o Apps Script. Atualizar apenas os arquivos do GitHub Pages deixa a correção automática indisponível.
+- Para uma nova partida, altere `GAME_ID` em `js/config.js`, mantendo os registros de partidas anteriores na planilha.

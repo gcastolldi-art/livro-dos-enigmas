@@ -3,27 +3,37 @@
  * Google, execute configurarLivro uma vez e publique como aplicativo web.
  * Execute como: eu. Acesso: qualquer pessoa.
  */
-const TEAMS = ['Vermelho','Laranja','Amarelo','Verde','Azul','Marinho','Roxo','Rosa','Marrom','Cinza','Preto','Branco'];
-const HEADERS = ['Partida','Equipe','Enigma','Jogador','Resposta JSON','Registrado em','ID do envio'];
+const TEAMS = ['Vermelho','Laranja','Amarelo','Verde','Azul','Marinho','Roxo','Rosa','Marrom','Turquesa','Preto','Branco'];
+const HEADERS = ['Partida','Equipe','Enigma','Jogador','Resposta JSON','Registrado em','ID do envio','Resultado','Pontos'];
 
 function configurarLivro() {
   const ss=SpreadsheetApp.getActiveSpreadsheet();
   let answers=ss.getSheetByName('Respostas');
   if (!answers) answers=ss.insertSheet('Respostas');
   if (answers.getLastRow()===0) answers.appendRow(HEADERS);
+  else answers.getRange(1,1,1,HEADERS.length).setValues([HEADERS]);
   let teams=ss.getSheetByName('Equipes');
   if (!teams) teams=ss.insertSheet('Equipes');
   if (teams.getLastRow()===0) {
     teams.appendRow(['Equipe','Código de acesso']);
-    TEAMS.forEach(team=>teams.appendRow([team,Utilities.getUuid().replace(/-/g,'').slice(0,10).toUpperCase()]));
   }
+  const existingTeams=new Set(teams.getDataRange().getValues().slice(1).map(r=>r[0]));
+  TEAMS.filter(team=>!existingTeams.has(team)).forEach(team=>teams.appendRow([team,Utilities.getUuid().replace(/-/g,'').slice(0,10).toUpperCase()]));
   let enigmas=ss.getSheetByName('Enigmas');
   if (!enigmas) enigmas=ss.insertSheet('Enigmas');
   if (enigmas.getLastRow()===0) {
     enigmas.appendRow(['ID do enigma','Ativo']);
     [['selo-das-cores',true],['palavra-oculta',true],['ordem-dos-simbolos',true]].forEach(row=>enigmas.appendRow(row));
   }
-  answers.setFrozenRows(1); teams.setFrozenRows(1); enigmas.setFrozenRows(1);
+  let key=ss.getSheetByName('Gabarito');
+  if (!key) key=ss.insertSheet('Gabarito');
+  if (key.getLastRow()===0) {
+    key.appendRow(['ID do enigma','Tipo','Resposta(s) aceita(s)','Pontos','Observações']);
+    key.appendRow(['selo-das-cores','escolha','labirinto',1,'Valor enviado pelo enigma 01']);
+    key.appendRow(['palavra-oculta','texto','livro|o livro',1,'Alternativas separadas por |; acentos e maiúsculas ignorados']);
+    key.appendRow(['ordem-dos-simbolos','ordem','eclipse,estrela,livro',1,'IDs das peças na ordem correta, separados por vírgula']);
+  }
+  answers.setFrozenRows(1); teams.setFrozenRows(1); enigmas.setFrozenRows(1); key.setFrozenRows(1);
 }
 
 function doGet(e) {
@@ -86,6 +96,35 @@ function safeCell_(value) {
   return /^[=+@\-]/.test(s)?"'"+s:s;
 }
 
+function normalize_(value) {
+  return String(value).normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().replace(/\s+/g,' ').toLowerCase();
+}
+
+function grade_(id,answer) {
+  const sh=SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Gabarito');
+  if(!sh) return {result:'PENDENTE',points:0};
+  const row=sh.getDataRange().getValues().slice(1).find(r=>String(r[0])===id);
+  if(!row||!row[2]||String(row[1]).toLowerCase()==='manual') return {result:'PENDENTE',points:0};
+  const type=String(row[1]).toLowerCase();
+  if (type!==answer.tipo || !['escolha','texto','ordem'].includes(type)) return {result:'PENDENTE',points:0};
+  const value=type==='ordem'&&Array.isArray(answer.valor)?answer.valor.join(','):answer.valor;
+  if (typeof value!=='string'||value.length>1000) return {result:'PENDENTE',points:0};
+  const correct=String(row[2]).split('|').some(accepted=>normalize_(accepted)===normalize_(value));
+  return {result:correct?'CORRETA':'INCORRETA',points:correct?(Number(row[3])||0):0};
+}
+
+// Execute após corrigir um gabarito para atualizar também respostas já gravadas.
+function recalcularGabarito() {
+  const sh=SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Respostas');
+  if (!sh||sh.getLastRow()<2) return;
+  const rows=sh.getRange(2,1,sh.getLastRow()-1,HEADERS.length).getValues();
+  const grades=rows.map(r=>{
+    try {const grade=grade_(String(r[2]),JSON.parse(String(r[4])));return [grade.result,grade.points];}
+    catch(e){return ['PENDENTE',0];}
+  });
+  sh.getRange(2,8,grades.length,2).setValues(grades);
+}
+
 function submit_(p) {
   if (p.action!=='submit') throw new Error('Ação inválida.');
   const team=requireTeam_(p), gameId=String(p.gameId||''), id=String(p.enigmaId||'');
@@ -102,7 +141,8 @@ function submit_(p) {
     const rows=sh.getDataRange().getValues().slice(1);
     const existing=rows.find(r=>r[0]===gameId&&r[1]===team&&r[2]===id);
     if(existing) return {ok:true,accepted:false};
-    sh.appendRow([gameId,team,id,safeCell_(player),safeCell_(raw),new Date(),requestId]);
+    const grade=grade_(id,answer);
+    sh.appendRow([gameId,team,id,safeCell_(player),safeCell_(raw),new Date(),requestId,grade.result,grade.points]);
     SpreadsheetApp.flush();
     return {ok:true,accepted:true};
   } finally {lock.releaseLock();}

@@ -10,9 +10,10 @@ $('page-count').textContent=`${pos+1} de ${config.length}`;
 $('book-title').textContent=item.titulo;
 $('team-label').textContent=session ? `Equipe ${session.team}` : '';
 $('prev').href=pos===0?'../../index.html':`../${config[pos-1].pasta}/`;
-$('prev').textContent=pos===0?'← Índice':'← Anterior';
+$('prev').textContent=pos===0?'':'← Anterior';
 $('next').href=pos===config.length-1?'../../index.html':`../${config[pos+1].pasta}/`;
-$('next').textContent=pos===config.length-1?'Índice →':'Próximo →';
+$('next').textContent=pos===config.length-1?'':'Próximo →';
+$('index-link').href='../../index.html';
 let locked=false;
 function display(status) {
   locked=!!status.submitted;
