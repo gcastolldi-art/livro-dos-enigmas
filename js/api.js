@@ -1,8 +1,9 @@
 import { API_URL, GAME_ID } from './config.js';
 const STORAGE_KEY = 'livro-enigmas-session';
-export const getSession = () => { try { return JSON.parse(sessionStorage.getItem(STORAGE_KEY)); } catch { return null; } };
-export const saveSession = data => sessionStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-export const clearSession = () => sessionStorage.removeItem(STORAGE_KEY);
+let memorySession=null;
+export const getSession = () => { try { return JSON.parse(sessionStorage.getItem(STORAGE_KEY))||memorySession; } catch { return memorySession; } };
+export const saveSession = data => {memorySession=data;try{sessionStorage.setItem(STORAGE_KEY,JSON.stringify(data));}catch{}};
+export const clearSession = () => {memorySession=null;try{sessionStorage.removeItem(STORAGE_KEY);}catch{}};
 
 // O retorno JSONP permite consulta a um Apps Script hospedado em outro domínio.
 // Nenhum conteúdo fornecido por jogadores é tratado como código pelo callback.

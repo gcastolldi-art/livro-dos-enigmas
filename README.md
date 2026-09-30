@@ -1,3 +1,21 @@
+# Livro dos Enigmas v2.4
+
+Correção do acesso por equipe, sobre a v2.3. Não exige alterações na planilha nem nova implantação do Apps Script.
+
+## Publicar
+
+Substitua os arquivos do site pelo conteúdo deste ZIP. A API_URL foi preservada. Os links continuam no formato:
+
+```text
+https://gcastolldi-art.github.io/livro-dos-enigmas/#equipe=Vermelho&codigo=CODIGO-DA-EQUIPE
+```
+
+A capa identifica o grupo pelo nome e estrela colorida. Abrir livro transmite equipe e código para indice.html. Os links de cada enigma, Anterior, Próximo e Índice também carregam esses parâmetros. As páginas recuperam o acesso diretamente do URL, inclusive ao abrir em uma nova aba. São aceitos parâmetros após # (recomendado) ou após ?. Nenhum código de equipe é fixado nos arquivos públicos.
+
+O índice carrega enigmas.json sem esperar pelo Apps Script, e informa separadamente quando a consulta das respostas falha. O envio continua sujeito à validação da equipe e ao bloqueio de primeira resposta no servidor. O URL não é limpo automaticamente porque os parâmetros devem acompanhar a navegação. Quem tiver um link completo terá acesso como aquela equipe.
+
+Teste a capa com um link individual, abra o índice e um enigma, copie o endereço do enigma para uma janela anônima e confira Anterior/Próximo/Índice. O índice também mostra erro específico se enigmas.json estiver ausente.
+
 # Livro dos Enigmas v2.3
 
 Versão desenvolvida a partir do ZIP v2.2 enviado, preservando os textos dos enigmas e a URL do Apps Script já configurada.

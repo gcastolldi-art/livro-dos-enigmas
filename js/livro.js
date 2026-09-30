@@ -1,11 +1,13 @@
+import {resolveAccess,linkWithAccess} from './acesso.js';
 import {decorateTeam} from './equipe.js';
-import {getSession,query,submitAnswer} from './api.js';
+import {query,submitAnswer} from './api.js';
 const config=await fetch('../../enigmas.json').then(r=>r.json()).then(items=>items.filter(x=>x.ativo));
 const id=document.body.dataset.enigma;
 const pos=config.findIndex(x=>x.id===id);
 if (pos<0) throw new Error(`Enigma não encontrado: ${id}`);
-const session=getSession();
-if (!session) location.replace('../../indice.html');
+let session;
+try {session=resolveAccess();} catch(error){console.error(error.message);}
+if (!session) location.replace('../../index.html');
 const $=id=>document.getElementById(id), item=config[pos];
 $('page-count').textContent=`${pos+1} de ${config.length}`;
 $('book-title').textContent=item.titulo;
@@ -15,6 +17,7 @@ $('prev').textContent=pos===0?'':'← Anterior';
 $('next').href=pos===config.length-1?'../../indice.html':`../${config[pos+1].pasta}/`;
 $('next').textContent=pos===config.length-1?'':'Próximo →';
 $('index-link').href='../../indice.html';
+for(const element of [$('prev'),$('next'),$('index-link')]) element.href=linkWithAccess(element.getAttribute('href'),session);
 let locked=false, checking=false, sending=false, generation=0;
 function display(status) {
   locked=!!status.submitted;
