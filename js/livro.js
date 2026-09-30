@@ -18,11 +18,13 @@ $('next').href=pos===config.length-1?'../../indice.html':`../${config[pos+1].pas
 $('next').textContent=pos===config.length-1?'':'Próximo →';
 $('index-link').href='../../indice.html';
 for(const element of [$('prev'),$('next'),$('index-link')]) element.href=linkWithAccess(element.getAttribute('href'),session);
-let locked=false, checking=false, sending=false, generation=0;
+let locked=false, checking=false, sending=false, generation=0, ownSubmitted=false;
 function display(status) {
   locked=!!status.submitted;
   $('lock-banner').hidden=!locked;
-  $('lock-banner').textContent=locked?'Resposta enviada!':'';
+  $('lock-banner').textContent=locked?(ownSubmitted?'Resposta Enviada':'A resposta já foi enviada pela equipe!'):'';
+  $('submit-answer').hidden=locked;
+  if(locked) $('message').textContent='';
   $('submit-answer').disabled=locked||sending;
   document.querySelectorAll('[data-answer-input]').forEach(el=>{el.disabled=locked;el.draggable=!locked;});
   document.dispatchEvent(new CustomEvent('book:lock',{detail:{locked}}));
@@ -44,7 +46,8 @@ export async function send(answer) {
   $('submit-answer').disabled=true; $('message').textContent='Enviando resposta...'; $('sending-indicator').hidden=false;
   try {
     const result=await submitAnswer(id,answer);
-    $('message').textContent=result.accepted?'Resposta já foi enviada pela equipe.':'Outra pessoa da equipe respondeu primeiro. A resposta já está registrada.';
+    ownSubmitted=result.accepted;
+    $('message').textContent='';
     display(result.status);
   } catch(e) {
     $('message').textContent=e.message;

@@ -1,68 +1,51 @@
-# Livro dos Enigmas v2.4
+# Livro dos Enigmas v2.5
 
-Correção do acesso por equipe, sobre a v2.3. Não exige alterações na planilha nem nova implantação do Apps Script.
-
-## Publicar
-
-Substitua os arquivos do site pelo conteúdo deste ZIP. A API_URL foi preservada. Os links continuam no formato:
-
-```text
-https://gcastolldi-art.github.io/livro-dos-enigmas/#equipe=Vermelho&codigo=CODIGO-DA-EQUIPE
-```
-
-A capa identifica o grupo pelo nome e estrela colorida. Abrir livro transmite equipe e código para indice.html. Os links de cada enigma, Anterior, Próximo e Índice também carregam esses parâmetros. As páginas recuperam o acesso diretamente do URL, inclusive ao abrir em uma nova aba. São aceitos parâmetros após # (recomendado) ou após ?. Nenhum código de equipe é fixado nos arquivos públicos.
-
-O índice carrega enigmas.json sem esperar pelo Apps Script, e informa separadamente quando a consulta das respostas falha. O envio continua sujeito à validação da equipe e ao bloqueio de primeira resposta no servidor. O URL não é limpo automaticamente porque os parâmetros devem acompanhar a navegação. Quem tiver um link completo terá acesso como aquela equipe.
-
-Teste a capa com um link individual, abra o índice e um enigma, copie o endereço do enigma para uma janela anônima e confira Anterior/Próximo/Índice. O índice também mostra erro específico se enigmas.json estiver ausente.
-
-# Livro dos Enigmas v2.3
-
-Versão desenvolvida a partir do ZIP v2.2 enviado, preservando os textos dos enigmas e a URL do Apps Script já configurada.
+Atualização sobre a v2.4, preservando os textos dos três enigmas existentes.
 
 ## Atualizar
 
-1. Substitua `Code.gs` no Apps Script vinculado à sua planilha e execute `configurarLivro`. Os códigos de equipes e respostas são mantidos. A antiga coluna `Resposta JSON` passa a ser `Resposta`; registros antigos contendo tipo/valor são convertidos para texto simples.
-2. A configuração cria a aba **Controle**, com o **Código do painel**. Esse código é exclusivo da organização; não publique no GitHub nem compartilhe com as equipes.
-3. Publique **Nova versão** da implantação existente, executando como você e com acesso **Qualquer pessoa**. A URL `/exec` em `js/config.js` continua válida ao atualizar a mesma implantação.
-4. Envie o conteúdo desta pasta à raiz do repositório GitHub. O ZIP já traz `index.html` na raiz, sem pasta adicional.
+1. Substitua `Code.gs` no Apps Script vinculado à planilha e execute `configurarLivro`. As respostas e códigos das equipes são preservados. O ID `sequencia-dos-sete` será incluído na aba Enigmas e seu gabarito será criado na aba Gabarito se ainda não existir.
+2. Publique uma **Nova versão** da mesma implantação, executando como você e com acesso **Qualquer pessoa**. A URL `/exec` já está preservada em `js/config.js`.
+3. Envie os arquivos deste ZIP à raiz do repositório GitHub. Não é necessário trocar os links individuais das equipes.
 
-## Capa, índice e links
+## Índice e identificação
 
-`index.html` mostra a capa ilustrada de couro azul e ornamentos dourados. **Abrir livro** leva a `indice.html` conservando os parâmetros. Os links da etapa anterior continuam:
+O índice mostra **Conjurando os enigmas** e um círculo em movimento durante o carregamento. Ao concluir a consulta, aparecem os títulos e o marcador **Respondido** somente para questões já enviadas. Não há indicação do tipo de enigma nem botão Tentar novamente.
+
+Nos cabeçalhos, a estrela colorida fica no centro e o texto à direita identifica **EQUIPE [ANIMAL]**, sem o nome da cor. Na capa, a estrela fica acima do nome do animal, ambas centralizadas. As informações de acesso continuam acompanhando os links da capa, índice e enigmas.
+
+## Mensagens de resposta
+
+Ao enviar uma resposta aceita nesta página, aparece somente **Resposta Enviada**, em verde e centralizada. Ao reabrir a página ou quando outro integrante já tiver respondido, aparece **A resposta já foi enviada pela equipe!**. O botão de envio é ocultado e os campos ficam bloqueados. Durante o envio permanece a barra animada com Enviando resposta...
+
+## Enigma 04: sete números
+
+A página `enigmas/04/index.html` tem sete caixas, para números de 0 a 99. Cada posição recebe dois dígitos, com zero à esquerda quando necessário. A gravação é uma string simples no formato:
 
 ```text
-https://gcastolldi-art.github.io/livro-dos-enigmas/#equipe=Vermelho&codigo=CODIGO-DA-EQUIPE
+01-05-03-08-07-06-02
 ```
 
-O índice valida o acesso, retira o código da barra e guarda a sessão nesta aba. O rodapé dos enigmas aponta para `indice.html`. A indicação da equipe à direita inclui uma estrela na cor do grupo.
+O gabarito piloto da aba Gabarito terá:
 
-## Respostas e correção
+| ID | Tipo | Resposta correta | Pontos |
+| --- | --- | --- | --- |
+| sequencia-dos-sete | sequencia | 01-05-03-08-07-06-02 | 1 |
 
-Envie somente o valor: `send(selected.value)`, `send(value)` ou `send(listaDePecas)`. Por compatibilidade, a camada comum aceita `{valor: ...}` e o formato antigo, mas transmite e grava apenas a resposta. O tipo da correção vem da aba **Gabarito**, pelo ID do enigma.
+Substitua as pistas da página e ajuste o gabarito antes de usar na gincana. A sequência correta não está no HTML nem no JS do jogador. É possível digitar um ou dois dígitos por caixa ou colar uma sequência completa separada por hífens. Envio com campo vazio é impedido.
 
-Escolha e texto são gravados como texto simples. Ordenação é gravada como IDs separados por vírgula (`eclipse,estrela,livro`). Respostas estruturadas futuras podem ser gravadas como JSON sem os campos artificiais tipo/valor; tipos sem correção automática ficam `PENDENTE`.
+Para adicionar mais questões desse tipo, copie a pasta 04, use um novo ID no HTML, adicione a entrada em enigmas.json e nas abas Enigmas/Gabarito, com tipo `sequencia` e a resposta no mesmo formato.
 
-A aba Gabarito tem: ID, Tipo, Resposta(s) aceita(s), Pontos e Observações. Tipos: `escolha`, `texto`, `ordem` ou `manual`. Alternativas aceitas podem ser separadas por `|`. A correção ignora acentos, maiúsculas e espaços repetidos. Não publique o gabarito nos arquivos do site.
+## Controle com acesso direto
 
-Após alterar o gabarito, execute `recalcularGabarito`. Para correção manual, ajuste Resultado e Pontos na aba Respostas. O recálculo pode sobrescrever pontuações manuais.
+Acesse `controle.html`. O painel usa tema escuro e fontes sem serifa, abre diretamente e consulta os resultados sem pedir código. O backend também foi ajustado para esse acesso, portanto precisa da nova implantação indicada acima. A antiga aba Controle pode permanecer na planilha; seu código não é mais utilizado.
 
-## Painel de controle
+O painel mostra respostas, resultado, pontos, ordem por enigma, ordem geral e conclusão. Atualiza a cada 15 segundos ou pelo botão Atualizar. A classificação é por pontos; no empate, a equipe que concluiu todos os enigmas primeiro fica à frente. Agora o total piloto será de quatro enigmas ativos. Mantenha enigmas.json e a aba Enigmas coerentes.
 
-Abra `controle.html` no site e digite o código da aba Controle. O painel mostra as respostas das 12 equipes por enigma, resultado, pontos, horário, ordem por questão e ordem geral. Também mostra a soma dos pontos, quantidade respondida e ordem de conclusão. Atualiza a cada 15 segundos enquanto a aba está visível, ou pelo botão Atualizar.
+## Correção e publicação
 
-A classificação usa pontos em ordem decrescente. No empate entre equipes concluídas, vence a que registrou a última resposta primeiro. Horários idênticos são desempatados pela ordem das linhas aceitas. Uma equipe concluída fica à frente de uma incompleta com os mesmos pontos; incompletas empatadas compartilham a classificação provisória. O painel é de consulta; ajustes são feitos na planilha.
+A planilha grava somente a resposta. O tipo de correção vem da aba Gabarito. Os tipos suportados são `escolha`, `texto`, `ordem`, `sequencia` e `manual`. Após alterar gabaritos, execute `recalcularGabarito` para atualizar resultados antigos; essa função pode sobrescrever pontuação ajustada manualmente.
 
-A aba **Enigmas** define quais questões entram nos totais. Mantenha os IDs e estados ativos coerentes com `enigmas.json`. Desativar uma questão altera a soma e o critério de conclusão.
+Os links continuam no formato `index.html#equipe=Vermelho&codigo=CODIGO`. Não fixe códigos nos arquivos públicos. Para uma nova partida, altere GAME_ID em js/config.js. A primeira resposta de cada equipe por questão permanece definitiva, mesmo se estiver errada.
 
-## Incluir enigmas
-
-Copie uma pasta em `enigmas/`, crie o HTML/JS da nova interação e atribua um `data-enigma` único. Inclua o mesmo ID em `enigmas.json`, na aba Enigmas (ativo TRUE) e na aba Gabarito. O JSON controla ordem, índice, contador N de X e navegação. Não reutilize IDs antigos. Novos formatos podem usar correção manual até serem implementados no backend.
-
-## Envio e testes
-
-Ao enviar, o botão fica desabilitado e aparece a barra animada com **Enviando resposta...**. A barra indica espera, sem inventar porcentagem. A primeira resposta bloqueia a questão mesmo se estiver errada. Nenhuma resposta é reenviada automaticamente.
-
-Antes do evento, teste capa → índice → enigma, os três formatos, duas pessoas enviando pela mesma equipe e o painel. Confira que só uma linha é aceita por equipe/questão. A lógica foi validada localmente com simulação do Sheets; a implantação real precisa ser testada após atualizar Code.gs.
-
-Imagem da capa criada por geração de imagens para este projeto: couro azul profundo, filigranas douradas, estrelas arcanas, medalhão de labirinto e título medieval Livro dos Enigmas. Arquivo: `assets/capa-livro.webp`.
+Teste após publicar: carregamento do índice, primeira resposta, acesso por outro dispositivo, sete números e painel direto. A lógica foi verificada localmente com simulação; a integração real depende da implantação na sua conta.

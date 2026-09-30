@@ -1,5 +1,30 @@
 [
-  {"id":"selo-das-cores","titulo":"O selo das cores","pasta":"01","tipo":"Escolha","ativo":true},
-  {"id":"palavra-oculta","titulo":"A palavra oculta","pasta":"02","tipo":"Texto","ativo":true},
-  {"id":"ordem-dos-simbolos","titulo":"A ordem dos símbolos","pasta":"03","tipo":"Ordenação","ativo":true}
+  {
+    "id": "selo-das-cores",
+    "titulo": "O selo das cores",
+    "pasta": "01",
+    "tipo": "Escolha",
+    "ativo": true
+  },
+  {
+    "id": "palavra-oculta",
+    "titulo": "A palavra oculta",
+    "pasta": "02",
+    "tipo": "Texto",
+    "ativo": true
+  },
+  {
+    "id": "ordem-dos-simbolos",
+    "titulo": "A ordem dos símbolos",
+    "pasta": "03",
+    "tipo": "Ordenação",
+    "ativo": true
+  },
+  {
+    "id": "sequencia-dos-sete",
+    "titulo": "A sequência dos sete",
+    "pasta": "04",
+    "tipo": "Sequência",
+    "ativo": true
+  }
 ]

@@ -36,9 +36,8 @@ function configurarLivro() {
     key.appendRow(['palavra-oculta','texto','livro|o livro',1,'Alternativas separadas por |; acentos e maiúsculas ignorados']);
     key.appendRow(['ordem-dos-simbolos','ordem','eclipse,estrela,livro',1,'IDs das peças na ordem correta, separados por vírgula']);
   }
-  let control=ss.getSheetByName('Controle');
-  if (!control) control=ss.insertSheet('Controle');
-  if(control.getLastRow()===0){control.appendRow(['Configuração','Valor']);control.appendRow(['Código do painel',Utilities.getUuid().replace(/-/g,'')]);}
+  if(!enigmas.getDataRange().getValues().slice(1).some(row=>row[0]==='sequencia-dos-sete'))enigmas.appendRow(['sequencia-dos-sete',true]);
+  if(!key.getDataRange().getValues().slice(1).some(row=>row[0]==='sequencia-dos-sete'))key.appendRow(['sequencia-dos-sete','sequencia','01-05-03-08-07-06-02',1,'Sete números com dois dígitos separados por hífen']);
   if(answers.getLastRow()>1){const oldValues=answers.getRange(2,5,answers.getLastRow()-1,1).getValues();answers.getRange(2,5,oldValues.length,1).setValues(oldValues.map(r=>[safeCell_(answerText_(r[0]))]));}
   answers.setFrozenRows(1); teams.setFrozenRows(1); enigmas.setFrozenRows(1); key.setFrozenRows(1);
 }
@@ -57,8 +56,8 @@ function doGet(e) {
     try {
       const ss=livroSpreadsheet_();
       const ready=['Equipes','Enigmas','Respostas','Gabarito'].every(name=>!!ss.getSheetByName(name));
-      health={ok:ready,version:'2.3',message:ready?'Conexão com a planilha funcionando.':'Execute configurarLivro para criar as abas.'};
-    } catch(error) {health={ok:false,version:'2.3',error:String(error.message||error)};}
+      health={ok:ready,version:'2.5',message:ready?'Conexão com a planilha funcionando.':'Execute configurarLivro para criar as abas.'};
+    } catch(error) {health={ok:false,version:'2.5',error:String(error.message||error)};}
     return ContentService.createTextOutput(JSON.stringify(health)).setMimeType(ContentService.MimeType.JSON);
   }
   if (!/^__bookCallback_[0-9]+_[0-9]+$/.test(callback))
@@ -128,7 +127,7 @@ function grade_(id,answer) {
   const row=sh.getDataRange().getValues().slice(1).find(r=>String(r[0])===id);
   if(!row||row[2]===''||row[2]===null||String(row[1]).toLowerCase()==='manual') return {result:'PENDENTE',points:0};
   const type=String(row[1]).toLowerCase();
-  if (!['escolha','texto','ordem'].includes(type)) return {result:'PENDENTE',points:0};
+  if (!['escolha','texto','ordem','sequencia'].includes(type)) return {result:'PENDENTE',points:0};
   const value=answerText_(answer);
   if (typeof value!=='string'||value.length>1000) return {result:'PENDENTE',points:0};
   const correct=String(row[2]).split('|').some(accepted=>normalize_(accepted)===normalize_(value));
@@ -177,9 +176,7 @@ function legacyValue_(value){
 }
 function answerText_(answer){const value=legacyValue_(answer);if(Array.isArray(value))return value.map(x=>typeof x==='object'?JSON.stringify(x):String(x)).join(',');return value&&typeof value==='object'?JSON.stringify(value):String(value);}
 function control_(p){
-  const ss=livroSpreadsheet_(),sheet=ss.getSheetByName('Controle');
-  const token=sheet&&sheet.getDataRange().getValues().slice(1).find(r=>r[0]==='Código do painel');
-  if(!token||!p.adminCode||String(token[1])!==String(p.adminCode))throw new Error('Código do painel inválido.');
+  const ss=livroSpreadsheet_();
   const gameId=String(p.gameId||'');if(!/^[a-z0-9-]{1,60}$/.test(gameId))throw new Error('Partida inválida.');
   const ids=ss.getSheetByName('Enigmas').getDataRange().getValues().slice(1).filter(r=>r[1]!==false&&String(r[1]).toUpperCase()!=='FALSE').map(r=>String(r[0]));
   const active=[...new Set(ids.filter(Boolean))],rows=ss.getSheetByName('Respostas').getDataRange().getValues().slice(1);
