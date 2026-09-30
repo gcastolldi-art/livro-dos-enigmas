@@ -39,7 +39,8 @@ export async function submitAnswer(enigmaId, answer) {
   const session = getSession();
   if (!session) throw new Error('Abra o livro e identifique-se antes de responder.');
   const requestId = crypto.randomUUID?.() || `${Date.now()}-${Math.random()}`;
-  const body = new URLSearchParams({action:'submit', gameId:GAME_ID, enigmaId, answer:JSON.stringify(answer), requestId, ...session});
+  const value=answer && typeof answer==='object' && !Array.isArray(answer) && Object.prototype.hasOwnProperty.call(answer,'valor') ? answer.valor : answer;
+  const body = new URLSearchParams({action:'submit', gameId:GAME_ID, enigmaId, answer:JSON.stringify(value), requestId, ...session});
   // Apps Script não fornece um CORS API convencional; o resultado da gravação é
   // confirmado por consulta posterior ao servidor, nunca por sucesso local.
   await fetch(API_URL, {method:'POST', mode:'no-cors', body});

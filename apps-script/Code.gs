@@ -4,7 +4,7 @@
  * Execute como: eu. Acesso: qualquer pessoa.
  */
 const TEAMS = ['Vermelho','Laranja','Amarelo','Verde','Azul','Marinho','Roxo','Rosa','Marrom','Turquesa','Preto','Branco'];
-const HEADERS = ['Partida','Equipe','Enigma','Jogador','Resposta JSON','Registrado em','ID do envio','Resultado','Pontos'];
+const HEADERS = ['Partida','Equipe','Enigma','Jogador','Resposta','Registrado em','ID do envio','Resultado','Pontos'];
 
 function configurarLivro() {
   const active=SpreadsheetApp.getActiveSpreadsheet();
@@ -36,6 +36,10 @@ function configurarLivro() {
     key.appendRow(['palavra-oculta','texto','livro|o livro',1,'Alternativas separadas por |; acentos e maiúsculas ignorados']);
     key.appendRow(['ordem-dos-simbolos','ordem','eclipse,estrela,livro',1,'IDs das peças na ordem correta, separados por vírgula']);
   }
+  let control=ss.getSheetByName('Controle');
+  if (!control) control=ss.insertSheet('Controle');
+  if(control.getLastRow()===0){control.appendRow(['Configuração','Valor']);control.appendRow(['Código do painel',Utilities.getUuid().replace(/-/g,'')]);}
+  if(answers.getLastRow()>1){const oldValues=answers.getRange(2,5,answers.getLastRow()-1,1).getValues();answers.getRange(2,5,oldValues.length,1).setValues(oldValues.map(r=>[safeCell_(answerText_(r[0]))]));}
   answers.setFrozenRows(1); teams.setFrozenRows(1); enigmas.setFrozenRows(1); key.setFrozenRows(1);
 }
 
@@ -53,14 +57,14 @@ function doGet(e) {
     try {
       const ss=livroSpreadsheet_();
       const ready=['Equipes','Enigmas','Respostas','Gabarito'].every(name=>!!ss.getSheetByName(name));
-      health={ok:ready,version:'2.1',message:ready?'Conexão com a planilha funcionando.':'Execute configurarLivro para criar as abas.'};
-    } catch(error) {health={ok:false,version:'2.1',error:String(error.message||error)};}
+      health={ok:ready,version:'2.3',message:ready?'Conexão com a planilha funcionando.':'Execute configurarLivro para criar as abas.'};
+    } catch(error) {health={ok:false,version:'2.3',error:String(error.message||error)};}
     return ContentService.createTextOutput(JSON.stringify(health)).setMimeType(ContentService.MimeType.JSON);
   }
   if (!/^__bookCallback_[0-9]+_[0-9]+$/.test(callback))
     return ContentService.createTextOutput('Callback inválido').setMimeType(ContentService.MimeType.TEXT);
   let result;
-  try { result=status_(p); }
+  try { result=p.action==='control'?control_(p):status_(p); }
   catch(err) { result={ok:false,error:String(err.message||err)}; }
   const json=JSON.stringify(result).replace(/</g,'\\u003c').replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029');
   return ContentService.createTextOutput(callback+'('+json+');').setMimeType(ContentService.MimeType.JAVASCRIPT);
@@ -122,10 +126,10 @@ function grade_(id,answer) {
   const sh=livroSpreadsheet_().getSheetByName('Gabarito');
   if(!sh) return {result:'PENDENTE',points:0};
   const row=sh.getDataRange().getValues().slice(1).find(r=>String(r[0])===id);
-  if(!row||!row[2]||String(row[1]).toLowerCase()==='manual') return {result:'PENDENTE',points:0};
+  if(!row||row[2]===''||row[2]===null||String(row[1]).toLowerCase()==='manual') return {result:'PENDENTE',points:0};
   const type=String(row[1]).toLowerCase();
-  if (type!==answer.tipo || !['escolha','texto','ordem'].includes(type)) return {result:'PENDENTE',points:0};
-  const value=type==='ordem'&&Array.isArray(answer.valor)?answer.valor.join(','):answer.valor;
+  if (!['escolha','texto','ordem'].includes(type)) return {result:'PENDENTE',points:0};
+  const value=answerText_(answer);
   if (typeof value!=='string'||value.length>1000) return {result:'PENDENTE',points:0};
   const correct=String(row[2]).split('|').some(accepted=>normalize_(accepted)===normalize_(value));
   return {result:correct?'CORRETA':'INCORRETA',points:correct?(Number(row[3])||0):0};
@@ -137,7 +141,7 @@ function recalcularGabarito() {
   if (!sh||sh.getLastRow()<2) return;
   const rows=sh.getRange(2,1,sh.getLastRow()-1,HEADERS.length).getValues();
   const grades=rows.map(r=>{
-    try {const grade=grade_(String(r[2]),JSON.parse(String(r[4])));return [grade.result,grade.points];}
+    try {const grade=grade_(String(r[2]),legacyValue_(r[4]));return [grade.result,grade.points];}
     catch(e){return ['PENDENTE',0];}
   });
   sh.getRange(2,8,grades.length,2).setValues(grades);
@@ -150,7 +154,7 @@ function submit_(p) {
   if (!/^[a-z0-9-]{1,60}$/.test(gameId)||!validEnigma_(id)||!player||player.length>60||raw.length>3000||!raw||requestId.length>100||!requestId)
     throw new Error('Dados de resposta inválidos.');
   const answer=JSON.parse(raw);
-  if (!answer||typeof answer!=='object'||Array.isArray(answer)||typeof answer.tipo!=='string'||!Object.prototype.hasOwnProperty.call(answer,'valor'))
+  if (answer===null || answer===undefined || !answerText_(answer).trim())
     throw new Error('Formato de resposta inválido.');
   const lock=LockService.getScriptLock();
   lock.waitLock(15000);
@@ -160,8 +164,36 @@ function submit_(p) {
     const existing=rows.find(r=>r[0]===gameId&&r[1]===team&&r[2]===id);
     if(existing) return {ok:true,accepted:false};
     const grade=grade_(id,answer);
-    sh.appendRow([gameId,team,id,safeCell_(player),safeCell_(raw),new Date(),requestId,grade.result,grade.points]);
+    sh.appendRow([gameId,team,id,safeCell_(player),safeCell_(answerText_(answer)),new Date(),requestId,grade.result,grade.points]);
     SpreadsheetApp.flush();
     return {ok:true,accepted:true};
   } finally {lock.releaseLock();}
+}
+
+function legacyValue_(value){
+  if(typeof value==='string'){try {const parsed=JSON.parse(value);if(parsed&&typeof parsed==='object'&&Object.prototype.hasOwnProperty.call(parsed,'valor'))return parsed.valor;}catch(e){}}
+  if(value&&typeof value==='object'&&!Array.isArray(value)&&Object.prototype.hasOwnProperty.call(value,'valor'))return value.valor;
+  return value;
+}
+function answerText_(answer){const value=legacyValue_(answer);if(Array.isArray(value))return value.map(x=>typeof x==='object'?JSON.stringify(x):String(x)).join(',');return value&&typeof value==='object'?JSON.stringify(value):String(value);}
+function control_(p){
+  const ss=livroSpreadsheet_(),sheet=ss.getSheetByName('Controle');
+  const token=sheet&&sheet.getDataRange().getValues().slice(1).find(r=>r[0]==='Código do painel');
+  if(!token||!p.adminCode||String(token[1])!==String(p.adminCode))throw new Error('Código do painel inválido.');
+  const gameId=String(p.gameId||'');if(!/^[a-z0-9-]{1,60}$/.test(gameId))throw new Error('Partida inválida.');
+  const ids=ss.getSheetByName('Enigmas').getDataRange().getValues().slice(1).filter(r=>r[1]!==false&&String(r[1]).toUpperCase()!=='FALSE').map(r=>String(r[0]));
+  const active=[...new Set(ids.filter(Boolean))],rows=ss.getSheetByName('Respostas').getDataRange().getValues().slice(1);
+  const teams=TEAMS.map(team=>({team,answers:{},points:0,answered:0,complete:false,completedAt:null,completionSequence:null,completionOrder:null})),submissions=[];
+  rows.forEach((r,index)=>{
+    if(r[0]!==gameId||!active.includes(String(r[2])))return;const t=teams.find(t=>t.team===r[1]);if(!t||t.answers[r[2]])return;
+    const at=new Date(r[5]).getTime();if(!Number.isFinite(at))return;
+    const entry={enigmaId:String(r[2]),answer:answerText_(r[4]),result:String(r[7]||'PENDENTE'),points:Number(r[8])||0,at,sequence:index+1};t.answers[r[2]]=entry;t.points+=entry.points;t.answered++;submissions.push({team:t.team,...entry});
+  });
+  submissions.sort((a,b)=>a.at-b.at||a.sequence-b.sequence);const perQuestion={};
+  submissions.forEach((entry,index)=>{entry.order=index+1;perQuestion[entry.enigmaId]=(perQuestion[entry.enigmaId]||0)+1;const target=teams.find(t=>t.team===entry.team).answers[entry.enigmaId];target.order=entry.order;target.questionOrder=perQuestion[entry.enigmaId];});
+  teams.forEach(t=>{t.complete=active.length>0&&t.answered===active.length;if(t.complete){const last=Object.values(t.answers).sort((a,b)=>b.at-a.at||b.sequence-a.sequence)[0];t.completedAt=last.at;t.completionSequence=last.sequence;}});
+  teams.filter(t=>t.complete).sort((a,b)=>a.completedAt-b.completedAt||a.completionSequence-b.completionSequence).forEach((t,i)=>t.completionOrder=i+1);
+  teams.sort((a,b)=>b.points-a.points||(a.complete&&b.complete?(a.completedAt-b.completedAt||a.completionSequence-b.completionSequence):Number(b.complete)-Number(a.complete)));
+  let rank=0,previous=null;teams.forEach((t,i)=>{if(!previous||t.points!==previous.points||t.complete!==previous.complete||(t.complete&&(t.completedAt!==previous.completedAt||t.completionSequence!==previous.completionSequence)))rank=i+1;t.rank=rank;previous=t;});
+  return {ok:true,gameId,activeIds:active,teams,submissions,total:active.length,updatedAt:Date.now()};
 }

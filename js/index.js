@@ -1,3 +1,4 @@
+import {decorateTeam} from './equipe.js';
 import {TEAMS} from './config.js';
 import {getSession,saveSession,clearSession,query} from './api.js';
 const $=id=>document.getElementById(id);
@@ -21,7 +22,7 @@ if (!session) {
   $('entry-error').hidden=false;
   if (!$('entry-error').textContent) $('entry-error').textContent='Acesse o link entregue à sua equipe após concluir o desafio anterior.';
 } else {
-  $('team-label').textContent=`Equipe ${session.team} · ${TEAMS[session.team]||session.player}`;
+  decorateTeam($('team-label'),session.team,`Equipe ${session.team} · ${TEAMS[session.team]||session.player}`);
   $('index-area').hidden=false;
   const list=$('index-list');
   for (const [i,item] of index.entries()) {

@@ -1,72 +1,50 @@
-# Livro dos Enigmas v2.1
+# Livro dos Enigmas v2.3
 
-Site estático para GitHub Pages com índice direto, páginas independentes e primeira resposta por equipe registrada no Google Sheets. A ilustração da princesa guardiã serviu como referência visual; ela continua na etapa anterior da história. Os enigmas incluídos são exemplos substituíveis.
+Versão desenvolvida a partir do ZIP v2.2 enviado, preservando os textos dos enigmas e a URL do Apps Script já configurada.
 
-## Correção da conexão (v2.1)
+## Atualizar
 
-O backend agora registra o ID da planilha em `configurarLivro` e usa `openById` no aplicativo web. O frontend espera até 30 segundos, repete uma consulta que exceder o prazo e distingue carregamento inválido de timeout. Não há reenvio automático de respostas.
+1. Substitua `Code.gs` no Apps Script vinculado à sua planilha e execute `configurarLivro`. Os códigos de equipes e respostas são mantidos. A antiga coluna `Resposta JSON` passa a ser `Resposta`; registros antigos contendo tipo/valor são convertidos para texto simples.
+2. A configuração cria a aba **Controle**, com o **Código do painel**. Esse código é exclusivo da organização; não publique no GitHub nem compartilhe com as equipes.
+3. Publique **Nova versão** da implantação existente, executando como você e com acesso **Qualquer pessoa**. A URL `/exec` em `js/config.js` continua válida ao atualizar a mesma implantação.
+4. Envie o conteúdo desta pasta à raiz do repositório GitHub. O ZIP já traz `index.html` na raiz, sem pasta adicional.
 
-1. Substitua `Code.gs` no editor vinculado à planilha e execute `configurarLivro` novamente. Seus códigos de equipes e respostas existentes são preservados.
-2. Em **Implantar > Gerenciar implantações > Editar**, selecione **Nova versão**, **Executar como: Eu**, acesso **Qualquer pessoa**, e implante.
-3. Abra a URL `/exec` diretamente em uma janela anônima. Deve aparecer `{"ok":true,"version":"2.1","message":"Conexão com a planilha funcionando."}`. Pedido de login indica uma restrição de acesso; versão diferente indica uma implantação antiga; `ok:false` traz o erro para corrigir.
-4. Atualize os arquivos do site, mantendo sua `API_URL` em `js/config.js`. Use a URL publicada terminada em `/exec`, sem parâmetros e sem barra extra.
-5. Se a URL do backend funciona diretamente, mas o site falha, abra o console do navegador (F12) e confira se a requisição ao Apps Script está sendo bloqueada. O retorno usa um redirecionamento para `script.googleusercontent.com`.
+## Capa, índice e links
 
-## 1. Atualizar a planilha e o Apps Script
-
-1. Se já instalou a v1, abra o Apps Script vinculado à mesma planilha e substitua **todo** o `Code.gs` pelo conteúdo de `apps-script/Code.gs`. Se ainda não instalou, crie uma planilha Google e abra **Extensões > Apps Script** para colar o arquivo.
-2. Salve e execute `configurarLivro` uma vez. Isso cria ou atualiza as abas **Respostas**, **Equipes**, **Enigmas** e **Gabarito** sem apagar as respostas existentes.
-3. Confira os códigos na aba **Equipes**. A lista oficial de 12 equipes inclui **Turquesa, Golfinho**. Se instalou a v1, a linha antiga **Cinza** pode permanecer na aba; ela não será aceita nesta versão. A nova linha Turquesa recebe um código próprio.
-4. Se já havia publicado o aplicativo web, use **Implantar > Gerenciar implantações > Editar > Nova versão**. Copie a URL `/exec`. Em uma instalação nova, use **Implantar > Nova implantação > Aplicativo da Web**, com **Executar como: Eu** e **Quem pode acessar: Qualquer pessoa**.
-5. Cole a URL `/exec` entre aspas no valor `API_URL` em `js/config.js`.
-
-Mantenha privadas as abas **Equipes** e **Gabarito**. O código de cada equipe só deve ser entregue ao grupo correspondente. O backend usa `LockService` para conferir e gravar a primeira resposta sob trava.
-
-## 2. Configurar o gabarito
-
-A aba **Gabarito** tem as colunas `ID do enigma`, `Tipo`, `Resposta(s) aceita(s)`, `Pontos`, `Observações`.
-
-| Tipo | Exemplo na coluna Resposta(s) aceita(s) | Regra |
-| --- | --- | --- |
-| `escolha` | `labirinto` | Valor da alternativa selecionada, não seu texto visível. |
-| `texto` | `livro|o livro` | Aceita qualquer opção separada por `|`; ignora maiúsculas, acentos e espaços repetidos. |
-| `ordem` | `eclipse,estrela,livro` | IDs das peças na ordem correta, separados por vírgula. |
-| `manual` | deixe em branco | Registra `PENDENTE` para conferência da organização. |
-
-O gabarito piloto corresponde às perguntas piloto. Ao substituir uma pergunta, **atualize também seu gabarito antes de liberar os links**. Não coloque respostas corretas em HTML, JavaScript ou JSON do GitHub Pages.
-
-A aba **Respostas** mostra o JSON enviado, `Resultado` (`CORRETA`, `INCORRETA` ou `PENDENTE`) e `Pontos`. A primeira resposta bloqueia a equipe mesmo se estiver incorreta. Se corrigir um gabarito após receber respostas, execute `recalcularGabarito` no Apps Script para atualizar resultados antigos. O resultado não é mostrado aos jogadores.
-
-## 3. Criar links individuais por equipe
-
-A página `index.html` já é o índice. O desafio anterior deve encaminhar para um URL no formato:
+`index.html` mostra a capa ilustrada de couro azul e ornamentos dourados. **Abrir livro** leva a `indice.html` conservando os parâmetros. Os links da etapa anterior continuam:
 
 ```text
-https://SEU-USUARIO.github.io/SEU-REPOSITORIO/#equipe=Vermelho&codigo=CODIGO-DA-ABA-EQUIPES
+https://gcastolldi-art.github.io/livro-dos-enigmas/#equipe=Vermelho&codigo=CODIGO-DA-EQUIPE
 ```
 
-Troque o nome e o código para cada uma das 12 equipes. Para Turquesa, por exemplo, use `#equipe=Turquesa&codigo=...`. A equipe e o código seguem no fragmento `#` do endereço, que o GitHub Pages não recebe. Após validar, o site remove o fragmento da barra e mantém a sessão nesta aba do navegador. Ao abrir o link em outro celular, os integrantes da mesma equipe terão acesso independente, com o mesmo bloqueio de resposta. O campo **Jogador** da planilha será preenchido automaticamente com o mascote oficial: Fênix, Tigre, Leão, Camaleão, Águia, Tubarão, Coruja, Flamingo, Urso, Golfinho, Pantera Negra ou Pégasus.
+O índice valida o acesso, retira o código da barra e guarda a sessão nesta aba. O rodapé dos enigmas aponta para `indice.html`. A indicação da equipe à direita inclui uma estrela na cor do grupo.
 
-Não divulgue esses links em uma página pública: quem tiver um link poderá responder por aquela equipe. O link da etapa anterior deve encaminhar apenas ao endereço da equipe apropriada.
+## Respostas e correção
 
-## 4. Publicar e testar
+Envie somente o valor: `send(selected.value)`, `send(value)` ou `send(listaDePecas)`. Por compatibilidade, a camada comum aceita `{valor: ...}` e o formato antigo, mas transmite e grava apenas a resposta. O tipo da correção vem da aba **Gabarito**, pelo ID do enigma.
 
-Envie o conteúdo da pasta `livro-dos-enigmas/` à raiz do repositório. Em **Settings > Pages**, publique pela branch principal e pasta `/ (root)`. Os caminhos relativos funcionam no endereço `usuario.github.io/repositorio/`.
+Escolha e texto são gravados como texto simples. Ordenação é gravada como IDs separados por vírgula (`eclipse,estrela,livro`). Respostas estruturadas futuras podem ser gravadas como JSON sem os campos artificiais tipo/valor; tipos sem correção automática ficam `PENDENTE`.
 
-Antes de publicar, pode executar `python3 -m http.server 8000` na pasta e abrir `http://localhost:8000/#equipe=Vermelho&codigo=...`. É necessário preencher `API_URL` e implantar o Apps Script até mesmo no teste local. Teste dois celulares com a mesma equipe enviando ao mesmo tempo: apenas uma linha deve ser aceita por enigma. Confira também que uma segunda equipe consegue responder à mesma questão e que o índice mostra o estado respondido.
+A aba Gabarito tem: ID, Tipo, Resposta(s) aceita(s), Pontos e Observações. Tipos: `escolha`, `texto`, `ordem` ou `manual`. Alternativas aceitas podem ser separadas por `|`. A correção ignora acentos, maiúsculas e espaços repetidos. Não publique o gabarito nos arquivos do site.
 
-## 5. Adicionar um novo enigma
+Após alterar o gabarito, execute `recalcularGabarito`. Para correção manual, ajuste Resultado e Pontos na aba Respostas. O recálculo pode sobrescrever pontuações manuais.
 
-1. Copie uma pasta de `enigmas/` e crie o HTML e JS próprios da nova interação.
-2. Defina um `data-enigma` único no HTML e inclua uma linha em `enigmas.json` com o mesmo `id`, `titulo`, `pasta`, `tipo` e `ativo:true`.
-3. Na aba **Enigmas**, inclua o mesmo ID e `TRUE`. Na aba **Gabarito**, inclua o tipo, a resposta correta e os pontos. Para uma correção subjetiva, use `manual`.
-4. No JS da página, importe `send` de `../../js/livro.js` e envie `{tipo:'...', valor:...}`. Novos formatos podem ter sua própria interface e usar `PENDENTE` até que a validação específica seja implementada no backend.
+## Painel de controle
 
-A ordem no JSON determina o índice, o contador `N de X` e os links Anterior/Próximo. Cada página inclui o link central **Índice** no rodapé. Para desativar, use `ativo:false` no JSON e `FALSE` na aba Enigmas. IDs antigos nunca devem ser reutilizados.
+Abra `controle.html` no site e digite o código da aba Controle. O painel mostra as respostas das 12 equipes por enigma, resultado, pontos, horário, ordem por questão e ordem geral. Também mostra a soma dos pontos, quantidade respondida e ordem de conclusão. Atualiza a cada 15 segundos enquanto a aba está visível, ou pelo botão Atualizar.
 
-## Observações operacionais
+A classificação usa pontos em ordem decrescente. No empate entre equipes concluídas, vence a que registrou a última resposta primeiro. Horários idênticos são desempatados pela ordem das linhas aceitas. Uma equipe concluída fica à frente de uma incompleta com os mesmos pontos; incompletas empatadas compartilham a classificação provisória. O painel é de consulta; ajustes são feitos na planilha.
 
-- O código da equipe funciona como uma credencial compartilhada; não identifica a pessoa que clicou. A coluna Jogador registra o mascote, conforme solicitado.
-- O Apps Script é consultado a cada oito segundos nas páginas de enigmas. O bloqueio visual pode demorar um instante, mas a trava no servidor decide qual resposta é válida.
-- A v2 exige reimplantar o Apps Script. Atualizar apenas os arquivos do GitHub Pages deixa a correção automática indisponível.
-- Para uma nova partida, altere `GAME_ID` em `js/config.js`, mantendo os registros de partidas anteriores na planilha.
+A aba **Enigmas** define quais questões entram nos totais. Mantenha os IDs e estados ativos coerentes com `enigmas.json`. Desativar uma questão altera a soma e o critério de conclusão.
+
+## Incluir enigmas
+
+Copie uma pasta em `enigmas/`, crie o HTML/JS da nova interação e atribua um `data-enigma` único. Inclua o mesmo ID em `enigmas.json`, na aba Enigmas (ativo TRUE) e na aba Gabarito. O JSON controla ordem, índice, contador N de X e navegação. Não reutilize IDs antigos. Novos formatos podem usar correção manual até serem implementados no backend.
+
+## Envio e testes
+
+Ao enviar, o botão fica desabilitado e aparece a barra animada com **Enviando resposta...**. A barra indica espera, sem inventar porcentagem. A primeira resposta bloqueia a questão mesmo se estiver errada. Nenhuma resposta é reenviada automaticamente.
+
+Antes do evento, teste capa → índice → enigma, os três formatos, duas pessoas enviando pela mesma equipe e o painel. Confira que só uma linha é aceita por equipe/questão. A lógica foi validada localmente com simulação do Sheets; a implantação real precisa ser testada após atualizar Code.gs.
+
+Imagem da capa criada por geração de imagens para este projeto: couro azul profundo, filigranas douradas, estrelas arcanas, medalhão de labirinto e título medieval Livro dos Enigmas. Arquivo: `assets/capa-livro.webp`.
