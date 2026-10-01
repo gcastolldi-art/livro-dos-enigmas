@@ -90,14 +90,14 @@ function doGet(e) {
     try {
       const ss=livroSpreadsheet_();
       const ready=['Equipes','Enigmas','Respostas','Gabarito'].every(name=>!!ss.getSheetByName(name));
-      health={ok:ready,version:'2.6',message:ready?'Conexão com a planilha funcionando.':'Execute configurarLivro para criar as abas.'};
-    } catch(error) {health={ok:false,version:'2.6',error:String(error.message||error)};}
+      health={ok:ready,version:'2.7',message:ready?'Conexão com a planilha funcionando.':'Execute configurarLivro para criar as abas.'};
+    } catch(error) {health={ok:false,version:'2.7',error:String(error.message||error)};}
     return ContentService.createTextOutput(JSON.stringify(health)).setMimeType(ContentService.MimeType.JSON);
   }
   if (!/^__bookCallback_[0-9]+_[0-9]+$/.test(callback))
     return ContentService.createTextOutput('Callback inválido').setMimeType(ContentService.MimeType.TEXT);
   let result;
-  try { result=p.action==='control'?control_(p):status_(p); }
+  try { result=p.action==='control'?control_(p):p.action==='setState'?setState_(p):p.action==='teamResults'?teamResults_(p):status_(p); }
   catch(err) { result={ok:false,error:String(err.message||err)}; }
   const json=JSON.stringify(result).replace(/</g,'\\u003c').replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029');
   return ContentService.createTextOutput(callback+'('+json+');').setMimeType(ContentService.MimeType.JAVASCRIPT);
@@ -138,11 +138,11 @@ function status_(p) {
   const rows=sh.getDataRange().getValues().slice(1);
   if (id) {
     const row=rows.find(r=>r[0]===gameId&&r[1]===team&&enigmaId_(r[2])===id);
-    return {ok:true,submitted:!!row,requestId:row?String(row[6]):null,enigmas:catalogo_()};
+    return {ok:true,state:gameState_(gameId),submitted:!!row,requestId:row?String(row[6]):null,enigmas:catalogo_()};
   }
   const answers={};
   rows.forEach(r=>{if(r[0]===gameId&&r[1]===team)answers[enigmaId_(r[2])]=true;});
-  return {ok:true,answers,enigmas:catalogo_()};
+  return {ok:true,state:gameState_(gameId),answers,enigmas:catalogo_()};
 }
 
 function safeCell_(value) {
@@ -195,6 +195,7 @@ function submit_(p) {
     const rows=sh.getDataRange().getValues().slice(1);
     const existing=rows.find(r=>r[0]===gameId&&r[1]===team&&enigmaId_(r[2])===id);
     if(existing) return {ok:true,accepted:false};
+    if(gameState_(gameId)!=='receiving')throw new Error('O prazo para responder os enigmas acabou!');
     const grade=grade_(id,answer);
     sh.appendRow([gameId,team,Number(id),safeCell_(player),safeCell_(answerText_(answer)),new Date(),requestId,grade.result,grade.points]);
     SpreadsheetApp.flush();
@@ -225,5 +226,29 @@ function control_(p){
   teams.filter(t=>t.complete).sort((a,b)=>a.completedAt-b.completedAt||a.completionSequence-b.completionSequence).forEach((t,i)=>t.completionOrder=i+1);
   teams.sort((a,b)=>b.points-a.points||(a.complete&&b.complete?(a.completedAt-b.completedAt||a.completionSequence-b.completionSequence):Number(b.complete)-Number(a.complete)));
   let rank=0,previous=null;teams.forEach((t,i)=>{if(!previous||t.points!==previous.points||t.complete!==previous.complete||(t.complete&&(t.completedAt!==previous.completedAt||t.completionSequence!==previous.completionSequence)))rank=i+1;t.rank=rank;previous=t;});
-  return {ok:true,gameId,activeIds:active,teams,submissions,total:active.length,updatedAt:Date.now()};
+  return {ok:true,state:gameState_(gameId),gameId,activeIds:active,teams,submissions,total:active.length,updatedAt:Date.now()};
+}
+
+// Estado isolado por partida; usa a mesma trava da gravação das respostas.
+function stateKey_(gameId){if(!/^[a-z0-9-]{1,60}$/.test(String(gameId||'')))throw new Error('Partida inválida.');return 'BOOK_STATE_'+gameId;}
+function gameState_(gameId){return PropertiesService.getScriptProperties().getProperty(stateKey_(gameId))||'receiving';}
+function setState_(p){
+  const key=stateKey_(p.gameId),state=String(p.state||'');
+  if(!['receiving','blocked','revealed'].includes(state))throw new Error('Estado inválido.');
+  const lock=LockService.getScriptLock();lock.waitLock(15000);
+  try{PropertiesService.getScriptProperties().setProperty(key,state);return {ok:true,state};}finally{lock.releaseLock();}
+}
+function teamResults_(p){
+  const team=requireTeam_(p);
+  if(gameState_(p.gameId)!=='revealed')throw new Error('As respostas ainda não foram liberadas.');
+  const data=control_(p),own=data.teams.find(t=>t.team===team);
+  const keys=registros_(livroSpreadsheet_().getSheetByName('Gabarito'));
+  const items=catalogo_().map(item=>{
+    const key=keys.find(k=>enigmaId_(k['ID do enigma'])===String(item.id));
+    const answer=own.answers[String(item.id)];
+    const grade=answer?grade_(item.id,answer.answer):null;
+    return {id:item.id,nome:item.nome,pontos:item.pontos,answer:answer?answer.answer:null,
+      gabarito:key?String(key['Resposta(s) aceita(s)']||''):'',result:grade?grade.result:'NAO_RESPONDIDA',points:grade?grade.points:0};
+  });
+  return {ok:true,team,items,points:items.reduce((sum,item)=>sum+item.points,0)};
 }

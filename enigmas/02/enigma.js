@@ -1,5 +1,5 @@
 import {send} from '../../js/livro.js';
-import {formatTen} from 'sequencia10.js';
+import {formatTen} from './sequencia10.js';
 const boxes=[...document.querySelectorAll('.number-box')];
 boxes.forEach((box,index)=>{
   box.addEventListener('input',()=>{box.value=box.value.replace(/\D/g,'').slice(0,2);if(box.value.length===2)boxes[index+1]?.focus();});

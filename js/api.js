@@ -49,6 +49,7 @@ export async function submitAnswer(enigmaId, answer) {
     await new Promise(resolve => setTimeout(resolve, 1100));
     const status = await query('status', {team:session.team, code:session.code, enigmaId});
     if (!status.ok) throw new Error(status.error || 'Falha ao consultar resposta.');
+    if (!status.submitted && status.state && status.state!=='receiving') throw new Error('O prazo para responder os enigmas acabou!');
     if (status.submitted) return {accepted:status.requestId === requestId, status};
   }
   throw new Error('Não foi possível confirmar o registro. Verifique o estado da questão antes de tentar novamente.');

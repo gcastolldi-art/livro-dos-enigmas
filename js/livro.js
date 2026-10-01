@@ -11,7 +11,7 @@ if (!session) location.replace('../../index.html');
 const $=id=>document.getElementById(id), item=config[pos];
 $('page-count').textContent=`${pos+1} de ${config.length}`;
 $('book-title').textContent=item.titulo;
-function showPoints(value){$('enigma-points').textContent=value==null?'Pontuação indisponível':`Este enigma vale ${Number(value)} ${Number(value)===1?'ponto':'pontos'}`;}
+function showPoints(value){$('enigma-points').textContent=value==null?'Pontuação indisponível':`${Number(value)} ${Number(value)===1?'ponto':'pontos'}`;}
 showPoints(item.pontos);
 if(session) decorateTeam($('team-label'),session.team,`Equipe ${session.team}`);
 $('prev').href=pos===0?'../../indice.html':`../${config[pos-1].pasta}/`;
@@ -24,9 +24,9 @@ let locked=false, checking=false, sending=false, generation=0, ownSubmitted=fals
 function display(status) {
   const live=status.enigmas?.find(x=>String(x.id)===id);
   if(live)showPoints(live.pontos);
-  locked=!!status.submitted;
+  locked=!!status.submitted||!!(status.state&&status.state!=='receiving');
   $('lock-banner').hidden=!locked;
-  $('lock-banner').textContent=locked?(ownSubmitted?'Resposta Enviada':'A resposta já foi enviada pela equipe!'):'';
+  $('lock-banner').textContent=status.submitted?(ownSubmitted?'Resposta Enviada':'A resposta já foi enviada pela equipe!'):(locked?'O prazo para responder os enigmas acabou!':'');
   $('submit-answer').hidden=locked;
   if(locked) $('message').textContent='';
   $('submit-answer').disabled=locked||sending;

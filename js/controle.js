@@ -8,6 +8,8 @@ function cell(row,text,tag='td'){const element=document.createElement(tag);eleme
 function time(ms){return new Date(ms).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit',fractionalSecondDigits:3});}
 function render(data){
   $('dashboard').hidden=false;
+  $('game-state').textContent={receiving:'Recebendo respostas',blocked:'Respostas bloqueadas',revealed:'Gabarito liberado'}[data.state];
+  document.querySelectorAll('[data-state]').forEach(b=>b.disabled=b.dataset.state===data.state);
   $('summary').textContent=`${data.teams.filter(t=>t.complete).length}/12 equipes concluíram · ${data.total} enigmas · atualizado às ${time(data.updatedAt)}`;
   const table=$('results-table');table.replaceChildren();const head=document.createElement('thead'),hr=document.createElement('tr');
   ['Pos.','Equipe',...data.activeIds.map(id=>labels[id]||id),'Pontos','Respondidos','Conclusão'].forEach(t=>cell(hr,t,'th'));head.append(hr);table.append(head);
@@ -33,3 +35,12 @@ async function update(){
 }
 $('refresh').onclick=update;
 update();setInterval(()=>{if(!document.hidden)update();},15000);
+
+document.querySelectorAll('[data-state]').forEach(button=>button.onclick=async()=>{
+  if(busy)return;busy=true;
+  document.querySelectorAll('[data-state]').forEach(b=>b.disabled=true);
+  $('control-status').textContent='Atualizando estado da partida...';
+  try{const result=await query('setState',{state:button.dataset.state});if(!result.ok)throw new Error(result.error);}
+  catch(error){$('control-status').textContent=error.message;busy=false;document.querySelectorAll('[data-state]').forEach(b=>b.disabled=false);return;}
+  busy=false;await update();
+});
