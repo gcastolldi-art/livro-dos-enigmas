@@ -18,6 +18,10 @@ async function loadIndex(){
       const li=document.createElement('li'),a=document.createElement('a');
       a.href=linkWithAccess(`enigmas/${item.pasta}/`,access);a.textContent=`${i+1}. ${item.titulo}`;li.append(a);
       if(result?.ok&&result.answers?.[item.id]){const tag=document.createElement('span');tag.className='tag';tag.textContent='Respondido';li.classList.add('done');li.append(tag);}
+      const points=document.createElement('span');points.className='enigma-points';
+      const live=result?.enigmas?.find(x=>Number(x.id)===Number(item.id));
+      const value=live?live.pontos:item.pontos;
+      points.textContent=value==null?'Pontuação indisponível':`${Number(value)} ${Number(value)===1?'ponto':'pontos'}`;li.append(points);
       list.append(li);
     }
     $('index-area').hidden=false;

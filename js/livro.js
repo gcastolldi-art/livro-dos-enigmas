@@ -3,7 +3,7 @@ import {decorateTeam} from './equipe.js';
 import {query,submitAnswer} from './api.js';
 const config=await fetch('../../enigmas.json').then(r=>r.json()).then(items=>items.filter(x=>x.ativo));
 const id=document.body.dataset.enigma;
-const pos=config.findIndex(x=>x.id===id);
+const pos=config.findIndex(x=>String(x.id)===id);
 if (pos<0) throw new Error(`Enigma não encontrado: ${id}`);
 let session;
 try {session=resolveAccess();} catch(error){console.error(error.message);}
@@ -11,6 +11,8 @@ if (!session) location.replace('../../index.html');
 const $=id=>document.getElementById(id), item=config[pos];
 $('page-count').textContent=`${pos+1} de ${config.length}`;
 $('book-title').textContent=item.titulo;
+function showPoints(value){$('enigma-points').textContent=value==null?'Pontuação indisponível':`Este enigma vale ${Number(value)} ${Number(value)===1?'ponto':'pontos'}`;}
+showPoints(item.pontos);
 if(session) decorateTeam($('team-label'),session.team,`Equipe ${session.team}`);
 $('prev').href=pos===0?'../../indice.html':`../${config[pos-1].pasta}/`;
 $('prev').textContent=pos===0?'':'← Anterior';
@@ -20,6 +22,8 @@ $('index-link').href='../../indice.html';
 for(const element of [$('prev'),$('next'),$('index-link')]) element.href=linkWithAccess(element.getAttribute('href'),session);
 let locked=false, checking=false, sending=false, generation=0, ownSubmitted=false;
 function display(status) {
+  const live=status.enigmas?.find(x=>String(x.id)===id);
+  if(live)showPoints(live.pontos);
   locked=!!status.submitted;
   $('lock-banner').hidden=!locked;
   $('lock-banner').textContent=locked?(ownSubmitted?'Resposta Enviada':'A resposta já foi enviada pela equipe!'):'';

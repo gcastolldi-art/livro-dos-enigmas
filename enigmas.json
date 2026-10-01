@@ -1,30 +1,34 @@
 [
   {
-    "id": "selo-das-cores",
-    "titulo": "O selo das cores",
+    "id": 1,
+    "titulo": "O valor da garrafa",
     "pasta": "01",
     "tipo": "Escolha",
-    "ativo": true
+    "ativo": true,
+    "pontos": 5
   },
   {
-    "id": "o-loteamento",
-    "titulo": "O Loteamento",
+    "id": 2,
+    "titulo": "Uma nova Terra",
     "pasta": "02",
     "tipo": "Sequência",
-    "ativo": true
+    "ativo": true,
+    "pontos": 10
   },
   {
-    "id": "ordem-dos-simbolos",
+    "id": 3,
     "titulo": "A ordem dos símbolos",
     "pasta": "03",
     "tipo": "Ordenação",
-    "ativo": true
+    "ativo": true,
+    "pontos": 12
   },
   {
-    "id": "senha-do-cofre",
+    "id": 4,
     "titulo": "A senha do cofre",
     "pasta": "04",
     "tipo": "Sequência",
-    "ativo": true
+    "ativo": true,
+    "pontos": 1
   }
 ]

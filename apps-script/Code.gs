@@ -22,24 +22,58 @@ function configurarLivro() {
   }
   const existingTeams=new Set(teams.getDataRange().getValues().slice(1).map(r=>r[0]));
   TEAMS.filter(team=>!existingTeams.has(team)).forEach(team=>teams.appendRow([team,Utilities.getUuid().replace(/-/g,'').slice(0,10).toUpperCase()]));
-  let enigmas=ss.getSheetByName('Enigmas');
-  if (!enigmas) enigmas=ss.insertSheet('Enigmas');
-  if (enigmas.getLastRow()===0) {
-    enigmas.appendRow(['ID do enigma','Ativo']);
-    [['selo-das-cores',true],['palavra-oculta',true],['ordem-dos-simbolos',true]].forEach(row=>enigmas.appendRow(row));
-  }
-  let key=ss.getSheetByName('Gabarito');
-  if (!key) key=ss.insertSheet('Gabarito');
-  if (key.getLastRow()===0) {
-    key.appendRow(['ID do enigma','Tipo','Resposta(s) aceita(s)','Pontos','Observações']);
-    key.appendRow(['selo-das-cores','escolha','labirinto',1,'Valor enviado pelo enigma 01']);
-    key.appendRow(['palavra-oculta','texto','livro|o livro',1,'Alternativas separadas por |; acentos e maiúsculas ignorados']);
-    key.appendRow(['ordem-dos-simbolos','ordem','eclipse,estrela,livro',1,'IDs das peças na ordem correta, separados por vírgula']);
-  }
-  if(!enigmas.getDataRange().getValues().slice(1).some(row=>row[0]==='sequencia-dos-sete'))enigmas.appendRow(['sequencia-dos-sete',true]);
-  if(!key.getDataRange().getValues().slice(1).some(row=>row[0]==='sequencia-dos-sete'))key.appendRow(['sequencia-dos-sete','sequencia','01-05-03-08-07-06-02',1,'Sete números com dois dígitos separados por hífen']);
+  configurarCatalogo_(ss,answers);
+  const enigmas=ss.getSheetByName('Enigmas'),key=ss.getSheetByName('Gabarito');
   if(answers.getLastRow()>1){const oldValues=answers.getRange(2,5,answers.getLastRow()-1,1).getValues();answers.getRange(2,5,oldValues.length,1).setValues(oldValues.map(r=>[safeCell_(answerText_(r[0]))]));}
   answers.setFrozenRows(1); teams.setFrozenRows(1); enigmas.setFrozenRows(1); key.setFrozenRows(1);
+}
+
+
+// IDs são permanentes: mudar a ordem ou o título não muda o ID.
+const ENIGMAS_PADRAO = [
+  {id:1,nome:'O valor da garrafa',tipo:'escolha',resposta:'2',pontos:5,aliases:['o-valor-da-garrafa','selo-das-cores']},
+  {id:2,nome:'Uma nova Terra',tipo:'sequencia',resposta:'06-03-08-10-04-09-05-01-07-02',pontos:10,aliases:['o-vilarejo','palavra-oculta']},
+  {id:3,nome:'A ordem dos símbolos',tipo:'ordem',resposta:'eclipse,estrela,livro',pontos:12,aliases:['ordem-dos-simbolos']},
+  {id:4,nome:'A senha do cofre',tipo:'sequencia',resposta:'13-21-13-21-32-21-12',pontos:1,aliases:['senha-do-cofre','sequencia-dos-sete']}
+];
+function enigmaId_(value){
+  const text=String(value==null?'':value).trim();
+  if(/^[0-9]+$/.test(text)&&Number.isSafeInteger(Number(text))&&Number(text)>0)return String(Number(text));
+  const item=ENIGMAS_PADRAO.find(x=>x.aliases.includes(text));
+  return item?String(item.id):'';
+}
+function registros_(sheet){
+  if(!sheet||!sheet.getLastRow())return [];
+  const rows=sheet.getDataRange().getValues(),headers=rows.shift().map(String);
+  return rows.filter(r=>r.some(v=>v!=='' )).map(row=>Object.fromEntries(headers.map((h,i)=>[h,row[i]])));
+}
+function configurarCatalogo_(ss,answers){
+  const previousEnigmas=registros_(ss.getSheetByName('Enigmas'));
+  const previousKey=registros_(ss.getSheetByName('Gabarito'));
+  const used=new Set(ENIGMAS_PADRAO.map(x=>x.id)),mapping={};
+  [...previousEnigmas,...previousKey].forEach(r=>{const old=String(r['ID do enigma']);const id=enigmaId_(old);if(id){mapping[old]=Number(id);used.add(Number(id));}});
+  let next=1;
+  [...previousEnigmas,...previousKey].forEach(r=>{const old=String(r['ID do enigma']);if(!mapping[old]){while(used.has(next))next++;mapping[old]=next;used.add(next);}});
+  function mapped(rows){const map=new Map();rows.forEach(r=>{const id=mapping[String(r['ID do enigma'])];if(map.has(id))throw new Error('IDs duplicados no catálogo: '+id+'. Corrija a planilha antes de configurar.');map.set(id,r);});return map;}
+  const oldEnigmas=mapped(previousEnigmas),oldKey=mapped(previousKey);
+  const ids=[...used].sort((a,b)=>a-b),enigmaRows=[],keyRows=[];
+  ids.forEach(id=>{
+    const def=ENIGMAS_PADRAO.find(x=>x.id===id),e=oldEnigmas.get(id),k=oldKey.get(id);
+    const nome=def?def.nome:String((e&&e['Nome do enigma'])||(k&&k['Nome do enigma'])||'Enigma '+id);
+    enigmaRows.push([id,nome,e&&e['Ativo']!==undefined?e['Ativo']:true]);
+    keyRows.push([id,nome,k?k['Tipo']:(def?def.tipo:'manual'),k?k['Resposta(s) aceita(s)']:(def?def.resposta:''),k?k['Pontos']:(def?def.pontos:0),k?k['Observações']||'':'']);
+  });
+  function write(name,headers,rows){let sheet=ss.getSheetByName(name);if(!sheet)sheet=ss.insertSheet(name);sheet.clearContents();sheet.getRange(1,1,rows.length+1,headers.length).setValues([headers,...rows]);sheet.setFrozenRows(1);}
+  write('Enigmas',['ID do enigma','Nome do enigma','Ativo'],enigmaRows);
+  write('Gabarito',['ID do enigma','Nome do enigma','Tipo','Resposta(s) aceita(s)','Pontos','Observações'],keyRows);
+  if(answers.getLastRow()>1){const rows=answers.getRange(2,3,answers.getLastRow()-1,1).getValues();answers.getRange(2,3,rows.length,1).setValues(rows.map(r=>[mapping[String(r[0])]||Number(enigmaId_(r[0]))||r[0]]));}
+}
+function catalogo_(){
+  const ss=livroSpreadsheet_(),keys=registros_(ss.getSheetByName('Gabarito'));
+  return registros_(ss.getSheetByName('Enigmas')).filter(r=>r['Ativo']!==false&&String(r['Ativo']).toUpperCase()!=='FALSE').map(r=>{
+    const id=enigmaId_(r['ID do enigma']),key=keys.find(k=>enigmaId_(k['ID do enigma'])===id);
+    return {id:Number(id),nome:String(r['Nome do enigma']||''),pontos:key?Number(key['Pontos'])||0:null};
+  }).filter(r=>r.id>0);
 }
 
 function livroSpreadsheet_() {
@@ -56,8 +90,8 @@ function doGet(e) {
     try {
       const ss=livroSpreadsheet_();
       const ready=['Equipes','Enigmas','Respostas','Gabarito'].every(name=>!!ss.getSheetByName(name));
-      health={ok:ready,version:'2.5',message:ready?'Conexão com a planilha funcionando.':'Execute configurarLivro para criar as abas.'};
-    } catch(error) {health={ok:false,version:'2.5',error:String(error.message||error)};}
+      health={ok:ready,version:'2.6',message:ready?'Conexão com a planilha funcionando.':'Execute configurarLivro para criar as abas.'};
+    } catch(error) {health={ok:false,version:'2.6',error:String(error.message||error)};}
     return ContentService.createTextOutput(JSON.stringify(health)).setMimeType(ContentService.MimeType.JSON);
   }
   if (!/^__bookCallback_[0-9]+_[0-9]+$/.test(callback))
@@ -89,27 +123,26 @@ function requireTeam_(p) {
 }
 
 function validEnigma_(id) {
-  if (!/^[a-z0-9-]{1,60}$/.test(id)) return false;
-  const sh=livroSpreadsheet_().getSheetByName('Enigmas');
-  if (!sh) return false;
-  return sh.getDataRange().getValues().slice(1).some(r=>r[0]===id&&r[1]!==false&&String(r[1]).toUpperCase()!=='FALSE');
+  const canonical=enigmaId_(id);
+  return !!canonical&&catalogo_().some(item=>String(item.id)===canonical);
 }
 
 function status_(p) {
   if (p.action!=='status') throw new Error('Ação inválida.');
   const team=requireTeam_(p), gameId=String(p.gameId||'');
   if (!/^[a-z0-9-]{1,60}$/.test(gameId)) throw new Error('Partida inválida.');
-  const id=String(p.enigmaId||'');
+  const id=p.enigmaId?enigmaId_(p.enigmaId):'';
+  if(p.enigmaId&&!id)throw new Error('Enigma inválido.');
   if (id&&!validEnigma_(id)) throw new Error('Enigma inválido.');
   const sh=livroSpreadsheet_().getSheetByName('Respostas');
   const rows=sh.getDataRange().getValues().slice(1);
   if (id) {
-    const row=rows.find(r=>r[0]===gameId&&r[1]===team&&r[2]===id);
-    return {ok:true,submitted:!!row,requestId:row?String(row[6]):null};
+    const row=rows.find(r=>r[0]===gameId&&r[1]===team&&enigmaId_(r[2])===id);
+    return {ok:true,submitted:!!row,requestId:row?String(row[6]):null,enigmas:catalogo_()};
   }
   const answers={};
-  rows.forEach(r=>{if(r[0]===gameId&&r[1]===team)answers[r[2]]=true;});
-  return {ok:true,answers};
+  rows.forEach(r=>{if(r[0]===gameId&&r[1]===team)answers[enigmaId_(r[2])]=true;});
+  return {ok:true,answers,enigmas:catalogo_()};
 }
 
 function safeCell_(value) {
@@ -124,14 +157,14 @@ function normalize_(value) {
 function grade_(id,answer) {
   const sh=livroSpreadsheet_().getSheetByName('Gabarito');
   if(!sh) return {result:'PENDENTE',points:0};
-  const row=sh.getDataRange().getValues().slice(1).find(r=>String(r[0])===id);
-  if(!row||row[2]===''||row[2]===null||String(row[1]).toLowerCase()==='manual') return {result:'PENDENTE',points:0};
-  const type=String(row[1]).toLowerCase();
-  if (!['escolha','texto','ordem','sequencia'].includes(type)) return {result:'PENDENTE',points:0};
+  const row=registros_(sh).find(r=>enigmaId_(r['ID do enigma'])===enigmaId_(id));
+  if(!row||row['Resposta(s) aceita(s)']===''||row['Resposta(s) aceita(s)']==null||String(row['Tipo']).toLowerCase()==='manual')return {result:'PENDENTE',points:0};
+  const type=String(row['Tipo']).toLowerCase();
+  if(!['escolha','texto','ordem','sequencia'].includes(type))return {result:'PENDENTE',points:0};
   const value=answerText_(answer);
-  if (typeof value!=='string'||value.length>1000) return {result:'PENDENTE',points:0};
-  const correct=String(row[2]).split('|').some(accepted=>normalize_(accepted)===normalize_(value));
-  return {result:correct?'CORRETA':'INCORRETA',points:correct?(Number(row[3])||0):0};
+  if(typeof value!=='string'||value.length>1000)return {result:'PENDENTE',points:0};
+  const correct=String(row['Resposta(s) aceita(s)']).split('|').some(accepted=>normalize_(accepted)===normalize_(value));
+  return {result:correct?'CORRETA':'INCORRETA',points:correct?(Number(row['Pontos'])||0):0};
 }
 
 // Execute após corrigir um gabarito para atualizar também respostas já gravadas.
@@ -148,7 +181,7 @@ function recalcularGabarito() {
 
 function submit_(p) {
   if (p.action!=='submit') throw new Error('Ação inválida.');
-  const team=requireTeam_(p), gameId=String(p.gameId||''), id=String(p.enigmaId||'');
+  const team=requireTeam_(p), gameId=String(p.gameId||''), id=enigmaId_(p.enigmaId);
   const player=String(p.player||'').trim(), raw=String(p.answer||''), requestId=String(p.requestId||'');
   if (!/^[a-z0-9-]{1,60}$/.test(gameId)||!validEnigma_(id)||!player||player.length>60||raw.length>3000||!raw||requestId.length>100||!requestId)
     throw new Error('Dados de resposta inválidos.');
@@ -160,10 +193,10 @@ function submit_(p) {
   try {
     const sh=livroSpreadsheet_().getSheetByName('Respostas');
     const rows=sh.getDataRange().getValues().slice(1);
-    const existing=rows.find(r=>r[0]===gameId&&r[1]===team&&r[2]===id);
+    const existing=rows.find(r=>r[0]===gameId&&r[1]===team&&enigmaId_(r[2])===id);
     if(existing) return {ok:true,accepted:false};
     const grade=grade_(id,answer);
-    sh.appendRow([gameId,team,id,safeCell_(player),safeCell_(answerText_(answer)),new Date(),requestId,grade.result,grade.points]);
+    sh.appendRow([gameId,team,Number(id),safeCell_(player),safeCell_(answerText_(answer)),new Date(),requestId,grade.result,grade.points]);
     SpreadsheetApp.flush();
     return {ok:true,accepted:true};
   } finally {lock.releaseLock();}
@@ -178,13 +211,13 @@ function answerText_(answer){const value=legacyValue_(answer);if(Array.isArray(v
 function control_(p){
   const ss=livroSpreadsheet_();
   const gameId=String(p.gameId||'');if(!/^[a-z0-9-]{1,60}$/.test(gameId))throw new Error('Partida inválida.');
-  const ids=ss.getSheetByName('Enigmas').getDataRange().getValues().slice(1).filter(r=>r[1]!==false&&String(r[1]).toUpperCase()!=='FALSE').map(r=>String(r[0]));
-  const active=[...new Set(ids.filter(Boolean))],rows=ss.getSheetByName('Respostas').getDataRange().getValues().slice(1);
+  const ids=catalogo_().map(item=>String(item.id));
+  const active=[...new Set(ids)],rows=ss.getSheetByName('Respostas').getDataRange().getValues().slice(1);
   const teams=TEAMS.map(team=>({team,answers:{},points:0,answered:0,complete:false,completedAt:null,completionSequence:null,completionOrder:null})),submissions=[];
   rows.forEach((r,index)=>{
-    if(r[0]!==gameId||!active.includes(String(r[2])))return;const t=teams.find(t=>t.team===r[1]);if(!t||t.answers[r[2]])return;
+    if(r[0]!==gameId||!active.includes(enigmaId_(r[2])))return;const t=teams.find(t=>t.team===r[1]);if(!t||t.answers[enigmaId_(r[2])])return;
     const at=new Date(r[5]).getTime();if(!Number.isFinite(at))return;
-    const entry={enigmaId:String(r[2]),answer:answerText_(r[4]),result:String(r[7]||'PENDENTE'),points:Number(r[8])||0,at,sequence:index+1};t.answers[r[2]]=entry;t.points+=entry.points;t.answered++;submissions.push({team:t.team,...entry});
+    const entry={enigmaId:enigmaId_(r[2]),answer:answerText_(r[4]),result:String(r[7]||'PENDENTE'),points:Number(r[8])||0,at,sequence:index+1};t.answers[enigmaId_(r[2])]=entry;t.points+=entry.points;t.answered++;submissions.push({team:t.team,...entry});
   });
   submissions.sort((a,b)=>a.at-b.at||a.sequence-b.sequence);const perQuestion={};
   submissions.forEach((entry,index)=>{entry.order=index+1;perQuestion[entry.enigmaId]=(perQuestion[entry.enigmaId]||0)+1;const target=teams.find(t=>t.team===entry.team).answers[entry.enigmaId];target.order=entry.order;target.questionOrder=perQuestion[entry.enigmaId];});
