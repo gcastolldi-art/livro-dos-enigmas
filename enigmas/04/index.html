@@ -4,11 +4,41 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>A sequência dos sete · Livro dos Enigmas</title>
+    <title>A senha do cofre · Livro dos Enigmas</title>
     <link rel="stylesheet" href="../../css/livro.css">
+    <style>
+        .pyramid-figure {
+            margin: 28px auto;
+            max-width: 460px;
+            text-align: center
+        }
+
+        .pyramid-figure img {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+
+        .enigma-content blockquote {
+            margin: 22px 0;
+            padding: 10px 20px;
+            border-left: 3px solid #9c7339;
+            font-style: italic
+        }
+
+        .sequence-instruction {
+            text-align: center;
+            margin: 28px 0 18px
+        }
+
+        .number-sequence-7 { 
+            grid-template-columns: repeat(7, minmax(0, 1fr)); 
+        }
+    </style>
 </head>
 
-<body data-enigma="sequencia-dos-sete">
+<body data-enigma="senha-do-cofre">
     <main class="book page-shell">
         <div class="book-inner">
             <header class="page-head"><span class="page-count" id="page-count"></span><span class="team-label"
@@ -16,10 +46,19 @@
             <h1 class="page-title" id="book-title"></h1>
             <div class="flourish" aria-hidden="true">✦ ✧ ✦</div>
             <section class="enigma-content">
-                <p class="intro">Sete posições guardam a sequência que abrirá o próximo selo.</p>
-                <p>Modelo de enigma com resposta numérica. Substitua este texto pelas pistas do desafio. Preencha cada
-                    posição com um número de 0 a 99, seguindo a ordem da esquerda para a direita.</p>
-                <div class="number-sequence" role="group" aria-label="Sequência de sete números"><label>1<input
+                <p class="intro">Entre as estantes de uma antiga biblioteca, um avô reuniu seus três netos para lhes
+                    fazer uma proposta inesperada.</p>
+                <p>Sobre a mesa do escritório, colocou uma folha amarelada. Nela, números formavam uma pirâmide cuja
+                    última linha permanecia incompleta.</p>
+                <p>Com um sorriso misterioso, apontou para o cofre e anunciou:</p>
+                <blockquote>“Aqui está a senha do meu cofre. Quem descobrir os sete números que faltam na base da
+                    pirâmide poderá abri-lo e ficar com tudo o que há dentro.”</blockquote>
+                <p>Os três se inclinaram sobre o papel. O segredo estava diante deles, à espera de alguém capaz de
+                    decifrá-lo.</p>
+                <figure class="pyramid-figure"><img src="piramide.png"
+                        alt="Pirâmide numérica. Linhas de cima para baixo: 2; 12; 11 12; 31 12; 13 21 12; 11 13 12 21 12; 31 13 11 22 21 12. A próxima linha está indicada por um ponto de interrogação."
+                        height="1000"></figure>
+                <div class="number-sequence number-sequence-7" role="group" aria-label="Sequência de sete números"><label>1<input
                             data-answer-input class="number-box" inputmode="numeric" type="text" maxlength="2"
                             autocomplete="off" placeholder="00" aria-label="Primeiro número"></label><label>2<input
                             data-answer-input class="number-box" inputmode="numeric" type="text" maxlength="2"

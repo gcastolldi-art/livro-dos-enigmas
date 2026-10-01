@@ -46,6 +46,6 @@ O painel mostra respostas, resultado, pontos, ordem por enigma, ordem geral e co
 
 A planilha grava somente a resposta. O tipo de correção vem da aba Gabarito. Os tipos suportados são `escolha`, `texto`, `ordem`, `sequencia` e `manual`. Após alterar gabaritos, execute `recalcularGabarito` para atualizar resultados antigos; essa função pode sobrescrever pontuação ajustada manualmente.
 
-Os links continuam no formato `index.html#equipe=Vermelho&codigo=CODIGO`. Não fixe códigos nos arquivos públicos. Para uma nova partida, altere GAME_ID em js/config.js. A primeira resposta de cada equipe por questão permanece definitiva, mesmo se estiver errada.
+Os links continuam no formato `index.html#equipe=Vermelha&codigo=XYZ`. Não fixe códigos nos arquivos públicos. Para uma nova partida, altere GAME_ID em js/config.js. A primeira resposta de cada equipe por questão permanece definitiva, mesmo se estiver errada.
 
 Teste após publicar: carregamento do índice, primeira resposta, acesso por outro dispositivo, sete números e painel direto. A lógica foi verificada localmente com simulação; a integração real depende da implantação na sua conta.

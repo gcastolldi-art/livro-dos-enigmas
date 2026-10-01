@@ -4,11 +4,41 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>A palavra oculta · Livro dos Enigmas</title>
+    <title>O Loteamento · Livro dos Enigmas</title>
     <link rel="stylesheet" href="../../css/livro.css">
+    <style>
+        .figure {
+            margin: 28px auto;
+            max-width: 460px;
+            text-align: center
+        }
+
+        .figure img {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+
+        .enigma-content blockquote {
+            margin: 10px 0;
+            padding: 5px 10px;
+            border-left: 3px solid #9c7339;
+            font-style: italic
+        }
+
+        .sequence-instruction {
+            text-align: center;
+            margin: 28px 0 18px
+        }
+        .number-sequence-10 { grid-template-columns: repeat(10, minmax(0, 1fr)); }
+        @media (max-width: 600px) {
+            .number-sequence-10 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+        }
+    </style>
 </head>
 
-<body data-enigma="palavra-oculta">
+<body data-enigma="o-loteamento">
     <main class="book page-shell">
         <div class="book-inner">
             <header class="page-head"><span class="page-count" id="page-count"></span><span class="team-label"
@@ -16,13 +46,43 @@
             <h1 class="page-title" id="book-title"></h1>
             <div class="flourish" aria-hidden="true">✦ ✧ ✦</div>
             <section class="enigma-content">
-                <p class="intro">Página piloto de texto. Substitua esta charada pelo enigma definitivo.</p>
-                <p>Sou a primeira prova confiada pela guardiã. Tenho páginas, mas não sou um castelo. Que objeto sou?
-                </p><label for="answer">Escreva uma resposta</label><input class="answer-input" data-answer-input
-                    id="answer" maxlength="200" autocomplete="off">
-                <div id="lock-banner" class="status-banner" hidden></div>
+                <p>Uma cidade foi dividida em cem lotes, agrupados em 10 bairros. Cada bairro recebeu uma cor.</p>
+                <p>Para construir nessa nova cidade é preciso obedecer regras:</p>
+                <figure class="figure"><img src="Enigma_02_regras_00.png" height="60"></figure>
+                <blockquote>Cada bairro só pode ter 1 única casa.</blockquote>
+                <blockquote>Na cidade toda só pode haver uma única casa em cada linha e em cada coluna.</blockquote>
+                <blockquote>Nenhuma casa pode ter vizinhos (horizontal, vertical ou diagonal).</blockquote>
+                <p>Descubra onde as 10 casas devem ser posicionadas e indique a coordenada de cada uma.</p>
+                <figure class="figure"><img src="Enigma_02.png"
+                        alt="cem quadrados coloridos dispostos em forma de grade de dez linhas por dez colunas."
+                        height="600"></figure>
+                <div class="number-sequence number-sequence-10" role="group" aria-label="Sequência de dez números"><label>A<input
+                            data-answer-input class="number-box" inputmode="numeric" type="text" maxlength="2"
+                            autocomplete="off" placeholder="" aria-label="Primeiro número"></label><label>B<input
+                            data-answer-input class="number-box" inputmode="numeric" type="text" maxlength="2"
+                            autocomplete="off" placeholder="" aria-label="Segundo número"></label><label>C<input
+                            data-answer-input class="number-box" inputmode="numeric" type="text" maxlength="2"
+                            autocomplete="off" placeholder="" aria-label="Terceiro número"></label><label>D<input
+                            data-answer-input class="number-box" inputmode="numeric" type="text" maxlength="2"
+                            autocomplete="off" placeholder="" aria-label="Quarto número"></label><label>E<input
+                            data-answer-input class="number-box" inputmode="numeric" type="text" maxlength="2"
+                            autocomplete="off" placeholder="" aria-label="Quinto número"></label><label>F<input
+                            data-answer-input class="number-box" inputmode="numeric" type="text" maxlength="2"
+                            autocomplete="off" placeholder="" aria-label="Sexto número"></label><label>G<input
+                            data-answer-input class="number-box" inputmode="numeric" type="text" maxlength="2"
+                            autocomplete="off" placeholder="" aria-label="Sétimo número"></label><label>H<input
+                            data-answer-input class="number-box" inputmode="numeric" type="text" maxlength="2"
+                            autocomplete="off" placeholder="" aria-label="Oitavo número"></label><label>I<input
+                            data-answer-input class="number-box" inputmode="numeric" type="text" maxlength="2"
+                            autocomplete="off" placeholder="" aria-label="Nono número"></label><label>J<input
+                            data-answer-input class="number-box" inputmode="numeric" type="text" maxlength="2"
+                            autocomplete="off" placeholder="" aria-label="Décimo número"></label>
+                        </div>
+                <div id="lock-banner" class="status-banner" hidden role="status"></div>
                 <div class="answer-actions"><button id="submit-answer" class="gold-button">Enviar resposta</button></div>
-                <div id="sending-indicator" class="sending-indicator" hidden aria-label="Envio em andamento"><span></span></div><p id="message" class="message" role="status"></p>
+                <div id="sending-indicator" class="sending-indicator" hidden aria-label="Envio em andamento">
+                    <span></span></div>
+                <p id="message" class="message" role="status"></p>
             </section>
             <nav class="nav-pages"><a id="prev"></a><a id="index-link">Índice</a><a id="next"></a></nav>
         </div>

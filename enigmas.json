@@ -7,10 +7,10 @@
     "ativo": true
   },
   {
-    "id": "palavra-oculta",
-    "titulo": "A palavra oculta",
+    "id": "o-loteamento",
+    "titulo": "O Loteamento",
     "pasta": "02",
-    "tipo": "Texto",
+    "tipo": "Sequência",
     "ativo": true
   },
   {
@@ -21,8 +21,8 @@
     "ativo": true
   },
   {
-    "id": "sequencia-dos-sete",
-    "titulo": "A sequência dos sete",
+    "id": "senha-do-cofre",
+    "titulo": "A senha do cofre",
     "pasta": "04",
     "tipo": "Sequência",
     "ativo": true

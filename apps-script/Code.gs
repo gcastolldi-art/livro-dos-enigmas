@@ -3,7 +3,7 @@
  * Google, execute configurarLivro uma vez e publique como aplicativo web.
  * Execute como: eu. Acesso: qualquer pessoa.
  */
-const TEAMS = ['Vermelho','Laranja','Amarelo','Verde','Azul','Marinho','Roxo','Rosa','Marrom','Turquesa','Preto','Branco'];
+const TEAMS = ['Vermelha','Laranja','Amarela','Verde','Azul','Marinho','Roxa','Rosa','Marrom','Turquesa','Preta','Branca'];
 const HEADERS = ['Partida','Equipe','Enigma','Jogador','Resposta','Registrado em','ID do envio','Resultado','Pontos'];
 
 function configurarLivro() {
