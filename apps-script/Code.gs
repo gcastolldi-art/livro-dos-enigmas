@@ -31,10 +31,121 @@ function configurarLivro() {
 
 // IDs são permanentes: mudar a ordem ou o título não muda o ID.
 const ENIGMAS_PADRAO = [
-  {id:1,nome:'O valor da garrafa',tipo:'escolha',resposta:'2',pontos:5,aliases:['o-valor-da-garrafa','selo-das-cores']},
-  {id:2,nome:'Uma nova Terra',tipo:'sequencia',resposta:'06-03-08-10-04-09-05-01-07-02',pontos:10,aliases:['o-vilarejo','palavra-oculta']},
-  {id:3,nome:'A ordem dos símbolos',tipo:'ordem',resposta:'eclipse,estrela,livro',pontos:12,aliases:['ordem-dos-simbolos']},
-  {id:4,nome:'A senha do cofre',tipo:'sequencia',resposta:'13-21-13-21-32-21-12',pontos:1,aliases:['senha-do-cofre','sequencia-dos-sete']}
+  {
+    "id": 1,
+    "nome": "O valor da garrafa",
+    "tipo": "escolha",
+    "resposta": "2",
+    "pontos": 5,
+    "aliases": [
+      "o-valor-da-garrafa",
+      "selo-das-cores"
+    ]
+  },
+  {
+    "id": 2,
+    "nome": "Uma nova Terra",
+    "tipo": "sequencia",
+    "resposta": "06-03-08-10-04-09-05-01-07-02",
+    "pontos": 10,
+    "aliases": [
+      "o-vilarejo",
+      "palavra-oculta"
+    ]
+  },
+  {
+    "id": 3,
+    "nome": "A ordem da história",
+    "tipo": "ordem",
+    "resposta": "",
+    "pontos": 12,
+    "aliases": [
+      "ordem-dos-simbolos"
+    ]
+  },
+  {
+    "id": 4,
+    "nome": "A senha do cofre",
+    "tipo": "sequencia",
+    "resposta": "13-21-13-21-32-21-12",
+    "pontos": 1,
+    "aliases": [
+      "senha-do-cofre",
+      "sequencia-dos-sete"
+    ]
+  },
+  {
+    "id": 5,
+    "nome": "As abelhas",
+    "tipo": "valor",
+    "resposta": "",
+    "pontos": 1,
+    "aliases": []
+  },
+  {
+    "id": 6,
+    "nome": "A torta de frutas",
+    "tipo": "valor",
+    "resposta": "",
+    "pontos": 1,
+    "aliases": []
+  },
+  {
+    "id": 7,
+    "nome": "Vale o quanto pesa",
+    "tipo": "valor",
+    "resposta": "",
+    "pontos": 1,
+    "aliases": []
+  },
+  {
+    "id": 8,
+    "nome": "Sarau de leitura",
+    "tipo": "escolha",
+    "resposta": "",
+    "pontos": 1,
+    "aliases": []
+  },
+  {
+    "id": 9,
+    "nome": "O Calendário do Rei",
+    "tipo": "escolha",
+    "resposta": "",
+    "pontos": 1,
+    "aliases": []
+  },
+  {
+    "id": 10,
+    "nome": "Caça-palavras",
+    "tipo": "texto",
+    "resposta": "",
+    "pontos": 1,
+    "aliases": []
+  },
+  {
+    "id": 11,
+    "nome": "Pagando o pato",
+    "tipo": "valor",
+    "resposta": "",
+    "pontos": 1,
+    "aliases": []
+  },
+  {
+    "id": 12,
+    "nome": "Nazaré confusa",
+    "tipo": "valor",
+    "resposta": "",
+    "pontos": 1,
+    "aliases": []
+  },
+  {
+    "id": 13,
+    "nome": "As diferenças ocultas",
+    "tipo": "localizar",
+    "resposta": "25",
+    "pontos": 25,
+    "aliases": []
+  }
 ];
 function enigmaId_(value){
   const text=String(value==null?'':value).trim();
@@ -59,20 +170,25 @@ function configurarCatalogo_(ss,answers){
   const ids=[...used].sort((a,b)=>a-b),enigmaRows=[],keyRows=[];
   ids.forEach(id=>{
     const def=ENIGMAS_PADRAO.find(x=>x.id===id),e=oldEnigmas.get(id),k=oldKey.get(id);
-    const nome=def?def.nome:String((e&&e['Nome do enigma'])||(k&&k['Nome do enigma'])||'Enigma '+id);
-    enigmaRows.push([id,nome,e&&e['Ativo']!==undefined?e['Ativo']:true]);
-    keyRows.push([id,nome,k?k['Tipo']:(def?def.tipo:'manual'),k?k['Resposta(s) aceita(s)']:(def?def.resposta:''),k?k['Pontos']:(def?def.pontos:0),k?k['Observações']||'':'']);
+    const nome=String((e&&e['Nome do enigma'])||(k&&k['Nome do enigma'])||(def&&def.nome)||'Enigma '+id);
+    const previousType=canonicalType_(k&&k['Tipo']||e&&e['Tipo']||def&&def.tipo||'manual');
+    const tipo=def&&['valor','localizar'].includes(def.tipo)&&previousType==='texto'?def.tipo:previousType;
+    enigmaRows.push([id,nome,e&&e['Ativo']!==undefined?e['Ativo']:true,tipo]);
+    keyRows.push([id,nome,tipo,def&&def.tipo==='localizar'&&previousType!=='localizar'?def.resposta:k?k['Resposta(s) aceita(s)']:(def?def.resposta:''),k?k['Pontos']:(def?def.pontos:0),k?k['Observações']||'':'']);
   });
   function write(name,headers,rows){let sheet=ss.getSheetByName(name);if(!sheet)sheet=ss.insertSheet(name);sheet.clearContents();sheet.getRange(1,1,rows.length+1,headers.length).setValues([headers,...rows]);sheet.setFrozenRows(1);}
-  write('Enigmas',['ID do enigma','Nome do enigma','Ativo'],enigmaRows);
+  write('Enigmas',['ID do enigma','Nome do enigma','Ativo','Tipo'],enigmaRows);
+  const validation=SpreadsheetApp.newDataValidation().requireValueInList(TIPOS_ENIGMA,true).setAllowInvalid(false).build();
+
   write('Gabarito',['ID do enigma','Nome do enigma','Tipo','Resposta(s) aceita(s)','Pontos','Observações'],keyRows);
+  if(keyRows.length){ss.getSheetByName('Gabarito').getRange(2,3,keyRows.length,1).setDataValidation(validation);ss.getSheetByName('Enigmas').getRange(2,4,enigmaRows.length,1).setDataValidation(validation);}
   if(answers.getLastRow()>1){const rows=answers.getRange(2,3,answers.getLastRow()-1,1).getValues();answers.getRange(2,3,rows.length,1).setValues(rows.map(r=>[mapping[String(r[0])]||Number(enigmaId_(r[0]))||r[0]]));}
 }
 function catalogo_(){
   const ss=livroSpreadsheet_(),keys=registros_(ss.getSheetByName('Gabarito'));
   return registros_(ss.getSheetByName('Enigmas')).filter(r=>r['Ativo']!==false&&String(r['Ativo']).toUpperCase()!=='FALSE').map(r=>{
     const id=enigmaId_(r['ID do enigma']),key=keys.find(k=>enigmaId_(k['ID do enigma'])===id);
-    return {id:Number(id),nome:String(r['Nome do enigma']||''),pontos:key?Number(key['Pontos'])||0:null};
+    return {id:Number(id),nome:String(r['Nome do enigma']||''),tipo:key?canonicalType_(key['Tipo']):canonicalType_(r['Tipo']),pontos:key?(canonicalType_(key['Tipo'])==='localizar'?Number(key['Resposta(s) aceita(s)'])||0:Number(key['Pontos'])||0):null};
   }).filter(r=>r.id>0);
 }
 
@@ -90,8 +206,8 @@ function doGet(e) {
     try {
       const ss=livroSpreadsheet_();
       const ready=['Equipes','Enigmas','Respostas','Gabarito'].every(name=>!!ss.getSheetByName(name));
-      health={ok:ready,version:'2.7',message:ready?'Conexão com a planilha funcionando.':'Execute configurarLivro para criar as abas.'};
-    } catch(error) {health={ok:false,version:'2.7',error:String(error.message||error)};}
+      health={ok:ready,version:'2.8',message:ready?'Conexão com a planilha funcionando.':'Execute configurarLivro para criar as abas.'};
+    } catch(error) {health={ok:false,version:'2.8',error:String(error.message||error)};}
     return ContentService.createTextOutput(JSON.stringify(health)).setMimeType(ContentService.MimeType.JSON);
   }
   if (!/^__bookCallback_[0-9]+_[0-9]+$/.test(callback))
@@ -154,16 +270,30 @@ function normalize_(value) {
   return String(value).normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().replace(/\s+/g,' ').toLowerCase();
 }
 
-function grade_(id,answer) {
-  const sh=livroSpreadsheet_().getSheetByName('Gabarito');
-  if(!sh) return {result:'PENDENTE',points:0};
-  const row=registros_(sh).find(r=>enigmaId_(r['ID do enigma'])===enigmaId_(id));
-  if(!row||row['Resposta(s) aceita(s)']===''||row['Resposta(s) aceita(s)']==null||String(row['Tipo']).toLowerCase()==='manual')return {result:'PENDENTE',points:0};
-  const type=String(row['Tipo']).toLowerCase();
-  if(!['escolha','texto','ordem','sequencia'].includes(type))return {result:'PENDENTE',points:0};
-  const value=answerText_(answer);
-  if(typeof value!=='string'||value.length>1000)return {result:'PENDENTE',points:0};
-  const correct=String(row['Resposta(s) aceita(s)']).split('|').some(accepted=>normalize_(accepted)===normalize_(value));
+const TIPOS_ENIGMA=['escolha','sequencia','ordem','texto','valor','localizar'];
+function canonicalType_(value){const name=normalize_(value);return {'multipla escolha':'escolha','ordenacao':'ordem','sequencia':'sequencia'}[name]||name;}
+function numericValue_(value){const text=String(value).trim().replace(',','.');return /^[+-]?(?:\d+(?:\.\d+)?|\.\d+)$/.test(text)&&Number.isFinite(Number(text))?Number(text):null;}
+function grade_(id,answer){
+  const row=registros_(livroSpreadsheet_().getSheetByName('Gabarito')).find(r=>enigmaId_(r['ID do enigma'])===enigmaId_(id));
+  if(!row||row['Resposta(s) aceita(s)']===''||row['Resposta(s) aceita(s)']==null)return {result:'PENDENTE',points:0};
+  const type=canonicalType_(row['Tipo']),value=answerText_(answer);
+  if(!TIPOS_ENIGMA.includes(type))return {result:'PENDENTE',points:0};
+  if(value.length>1000)return {result:'INVALIDA',points:0};
+  if(type==='localizar'){
+    const max=numericValue_(row['Resposta(s) aceita(s)']),count=numericValue_(value);
+    if(max===null||!Number.isSafeInteger(max)||max<1)return {result:'PENDENTE',points:0};
+    if(count===null||!Number.isSafeInteger(count)||count<0||count>max)return {result:'INVALIDA',points:0};
+    return {result:count===max?'CORRETA':count>0?'PARCIAL':'INCORRETA',points:count};
+  }
+  const accepted=String(row['Resposta(s) aceita(s)']).split('|');
+  let correct;
+  if(type==='valor'){
+    const number=numericValue_(value);if(number===null)return {result:'INVALIDA',points:0};
+    correct=accepted.some(a=>numericValue_(a)!==null&&numericValue_(a)===number);
+  }else{
+    const canonical=v=>type==='sequencia'?String(v).trim().split('-').map(x=>/^\d+$/.test(x.trim())?String(Number(x.trim())):x.trim()).join('-'):type==='ordem'?String(v).split(',').map(normalize_).join(','):normalize_(v);
+    correct=accepted.some(a=>canonical(a)===canonical(value));
+  }
   return {result:correct?'CORRETA':'INCORRETA',points:correct?(Number(row['Pontos'])||0):0};
 }
 
@@ -197,6 +327,7 @@ function submit_(p) {
     if(existing) return {ok:true,accepted:false};
     if(gameState_(gameId)!=='receiving')throw new Error('O prazo para responder os enigmas acabou!');
     const grade=grade_(id,answer);
+    if(grade.result==='INVALIDA')throw new Error('Resposta inválida para o tipo do enigma ou fora do limite do gabarito.');
     sh.appendRow([gameId,team,Number(id),safeCell_(player),safeCell_(answerText_(answer)),new Date(),requestId,grade.result,grade.points]);
     SpreadsheetApp.flush();
     return {ok:true,accepted:true};

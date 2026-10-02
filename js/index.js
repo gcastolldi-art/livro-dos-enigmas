@@ -7,6 +7,7 @@ async function loadIndex(){
     const access=resolveAccess();
     if(!access)throw new Error('Acesse o link entregue à sua equipe após concluir o desafio anterior.');
     decorateTeam($('team-label'),access.team);
+    $('share-link').href=linkWithAccess('compartilhar.html',access);
     const response=await fetch('enigmas.json',{cache:'no-store'});
     if(!response.ok)throw new Error('Não foi possível carregar o catálogo dos enigmas.');
     const index=(await response.json()).filter(item=>item.ativo);
