@@ -70,5 +70,13 @@
     "tipo": "Escolha",
     "ativo": true,
     "pontos": 1
+  },
+  {
+    "id": 10,
+    "titulo": "Caça-palavras",
+    "pasta": "10",
+    "tipo": "Texto",
+    "ativo": true,
+    "pontos": 1
   }
 ]

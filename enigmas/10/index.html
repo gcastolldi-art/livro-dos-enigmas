@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Caça-palavras · Livro dos Enigmas</title>
+    <link rel="stylesheet" href="../../css/livro.css">
+    <style>
+        .enigma-content blockquote {
+            margin: 22px 0;
+            padding: 10px 20px;
+            border-left: 3px solid #9c7339;
+            font-style: italic
+        }
+    </style>
+</head>
+
+<body data-enigma="10">
+    <main class="book page-shell">
+        <div class="book-inner">
+            <header class="page-head"><span class="page-count" id="page-count"></span><span class="team-label"
+                    id="team-label"></span></header>
+            <h1 class="page-title" id="book-title"></h1>
+            <p id="enigma-points" class="enigma-value" aria-live="polite"></p>
+            <div class="flourish" aria-hidden="true">✦ ✧ ✦</div>
+            <section class="enigma-content">
+                <p class="intro">Letras embaralhadas, palavras ocultas. Uma boa caça sempre dá bons resultados.</p>
+                <p>Dois amigos em um café estavam conversando sobre os tempos de escola. Foi quando um deles pegou o guardanapo e escreveu dez sequencias de três letras e disse:</p>
+                <blockquote>"Meu caro amigo, aqui estão três palavras ocultas. A primeira letra de cada uma delas está na primeira linha. A segunda letra está na segunda linha e assim por diante. Você consegue adivinhar quais são?"</blockquote>
+                <p>O outro amigo olhou atentamente, pensou um pouco e matou a charada.</p>
+                <figure class="figure"><img src="Guardanapo_rabiscado.png" height="500"></figure>
+                <p>Sobre qual assunto eles estavam conversando?</p>
+                <input class="answer-input" data-answer-input id="answer" type="text" maxlength="200" autocomplete="off" placeholder="digite apenas uma palavra">
+                <div id="lock-banner" class="status-banner" hidden role="status"></div>
+                <div class="answer-actions"><button id="submit-answer" class="gold-button">Enviar resposta</button>
+                </div>
+                <div id="sending-indicator" class="sending-indicator" hidden aria-label="Envio em andamento">
+                    <span></span>
+                </div>
+                <p id="message" class="message" role="status"></p>
+            </section>
+            <nav class="nav-pages"><a id="prev"></a><a id="index-link">Índice</a><a id="next"></a></nav>
+        </div>
+    </main>
+    <script type="module" src="enigma.js"></script>
+</body>
+
+</html>
