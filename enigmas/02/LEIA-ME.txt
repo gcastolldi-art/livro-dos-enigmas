@@ -1,6 +1,0 @@
-Coloque index.html, enigma.js e as duas imagens na pasta deste enigma.
-Coloque sequencia10.js na pasta js na raiz do projeto.
-O auxiliar sequencia.js dos enigmas de sete posições não precisa ser alterado.
-A resposta será enviada como texto com dez números de dois dígitos separados por hífens.
-Mantido o data-enigma original: senha-do-cofre. Esse ID deve coincidir com o item de enigmas.json e com as abas Enigmas e Gabarito. Se O Loteamento é um novo enigma, use um ID exclusivo em todos esses locais para não compartilhar respostas com A senha do cofre.
-O gabarito deve conter dez números no mesmo formato. Nenhum gabarito foi inventado.

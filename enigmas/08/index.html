@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>A palavra oculta · Livro dos Enigmas</title>
+    <title>Sarau de leitura · Livro dos Enigmas</title>
     <link rel="stylesheet" href="../../css/livro.css">
 </head>
 
@@ -23,19 +23,25 @@
                 <p>Os seis escritores eram: Valentina, Bento, Raul, Camila, Edgar e Tobias</p>
                 <p>Cada um deles era especialista de um gênero: Romance, Contos, Poesia, humor, História e Teatro</p>
                 <p><ol>
-                    <li>Raul não era historiador e estava lendo uma coletânea de contos.</li>
+                    <li>Raul não era historiador nem escritor de humore estava lendo uma coletânea de contos.</li>
                     <li>Bento, que era cunhado do autor de romances, estava sentado entre o escritor de humor e o escritor de contos.</li>
                     <li>O escritor de contos estava sentado exatamente em frente ao historiador.</li>
-                    <li>Camila estava sentada exatamente em frente ao autor de romances.</li>
-                    <li>Edgar estava lendo uma obra de humor.</li>
-                    <li>Edgar estava sentado ao lado do autor de peças de teatro.</li>
-                    <li>Raul estava sentado em uma das pontas da fileira.</li>
-                    <li>Tobias detestava poesia — tanto que, segundo a camareira, passou a noite inteira reclamando que “poesia demais estraga qualquer jantar”.</li>
+                    <li>Camila estava lendo uma peça de teatro e sentada exatamente em frente ao autor de romances e ao lado do poeta.</li>
+                    <li>Edgar estava lendo uma obra de humor e sentado ao lado do autor de peças de teatro.</li>
+                    <li>Raul estava sentado na ponta de uma das fileiras.</li>
+                    <li>Tobias detestava poesia.</li>
                     <li>Cada escritor estava lendo o trabalho de uma pessoa diferente. Ninguém estava lendo o próprio livro.</li>
                 </ol></p>
                 <p>Com base nas informações acima, qual escritor era o autor de romances?</p>
-                <input class="answer-input" data-answer-input id="answer" type="text" maxlength="200" autocomplete="off" placeholder="">
-                <div id="lock-banner" class="status-banner" hidden role="status"></div>
+                <div class="choice-list" role="radiogroup" aria-label="Escolha um símbolo">
+                    <label class="choice"><input  data-answer-input type="radio" name="choice" value="1">Valentina</label>
+                    <label class="choice"><input data-answer-input type="radio" name="choice" value="2">Bento</label>
+                    <label class="choice"><input data-answer-input type="radio" name="choice" value="3">Raul</label>
+                    <label class="choice"><input data-answer-input type="radio" name="choice" value="4">Camila</label>
+                    <label class="choice"><input data-answer-input type="radio" name="choice" value="5">Edgar</label>
+                    <label class="choice"><input data-answer-input type="radio" name="choice" value="6">Tobias</label>
+                </div>
+                <div id="lock-banner" class="status-banner" hidden></div>
                 <div class="answer-actions"><button id="submit-answer" class="gold-button">Enviar resposta</button></div>
                 <div id="sending-indicator" class="sending-indicator" hidden aria-label="Envio em andamento"><span></span></div><p id="message" class="message" role="status"></p>
             </section>

@@ -31,9 +31,15 @@
             text-align: center;
             margin: 28px 0 18px
         }
-        .number-sequence-10 { grid-template-columns: repeat(10, minmax(0, 1fr)); }
+
+        .number-sequence-10 {
+            grid-template-columns: repeat(10, minmax(0, 1fr));
+        }
+
         @media (max-width: 600px) {
-            .number-sequence-10 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+            .number-sequence-10 {
+                grid-template-columns: repeat(5, minmax(0, 1fr));
+            }
         }
     </style>
 </head>
@@ -45,9 +51,11 @@
                     id="team-label"></span></header>
             <h1 class="page-title" id="book-title"></h1>
             <p id="enigma-points" class="enigma-value" aria-live="polite"></p>
-            <div class="flourish" aria-hidden="true">✦ ✧ ✦</div>            
+            <div class="flourish" aria-hidden="true">✦ ✧ ✦</div>
             <section class="enigma-content">
-                <p>Um novo Vilarejo foi estabelecido no Reino. Ele foi dividido em cem porções de terra perfeitamente organizadas em linhas e colunas, e depois agrupadas em 10 lotes irregulares. Cada lote recebeu uma cor.</p>
+                <p>Um novo Vilarejo foi estabelecido no Reino. Ele foi dividido em cem porções de terra perfeitamente
+                    organizadas em linhas e colunas, e depois agrupadas em 10 lotes irregulares. Cada lote recebeu uma
+                    cor.</p>
                 <p>Para construir sua casas, os novos aldeões precisam obedecer três regras:</p>
                 <figure class="figure"><img src="Enigma_02_regras_00.png" height="30"></figure>
                 <blockquote>Cada lote só pode ter 1 única casa.</blockquote>
@@ -57,8 +65,8 @@
                 <figure class="figure"><img src="Enigma_02.png"
                         alt="cem quadrados coloridos dispostos em forma de grade de dez linhas por dez colunas."
                         height="600"></figure>
-                <div class="number-sequence number-sequence-10" role="group" aria-label="Sequência de dez números"><label>A<input
-                            data-answer-input class="number-box" inputmode="numeric" type="text" maxlength="2"
+                <div class="number-sequence number-sequence-10" role="group" aria-label="Sequência de dez números">
+                    <label>A<input data-answer-input class="number-box" inputmode="numeric" type="text" maxlength="2"
                             autocomplete="off" placeholder="" aria-label="Primeiro número"></label><label>B<input
                             data-answer-input class="number-box" inputmode="numeric" type="text" maxlength="2"
                             autocomplete="off" placeholder="" aria-label="Segundo número"></label><label>C<input
@@ -78,11 +86,13 @@
                             autocomplete="off" placeholder="" aria-label="Nono número"></label><label>J<input
                             data-answer-input class="number-box" inputmode="numeric" type="text" maxlength="2"
                             autocomplete="off" placeholder="" aria-label="Décimo número"></label>
-                        </div>
+                </div>
                 <div id="lock-banner" class="status-banner" hidden role="status"></div>
-                <div class="answer-actions"><button id="submit-answer" class="gold-button">Enviar resposta</button></div>
+                <div class="answer-actions"><button id="submit-answer" class="gold-button">Enviar resposta</button>
+                </div>
                 <div id="sending-indicator" class="sending-indicator" hidden aria-label="Envio em andamento">
-                    <span></span></div>
+                    <span></span>
+                </div>
                 <p id="message" class="message" role="status"></p>
             </section>
             <nav class="nav-pages"><a id="prev"></a><a id="index-link">Índice</a><a id="next"></a></nav>

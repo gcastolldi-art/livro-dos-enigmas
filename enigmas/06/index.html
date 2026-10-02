@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>A torta de frutas · Livro dos Enigmas</title>
+    <link rel="stylesheet" href="../../css/livro.css">
+</head>
+
+<body data-enigma="6">
+    <main class="book page-shell">
+        <div class="book-inner">
+            <header class="page-head"><span class="page-count" id="page-count"></span><span class="team-label"
+                    id="team-label"></span></header>
+            <h1 class="page-title" id="book-title"></h1>
+            <p id="enigma-points" class="enigma-value" aria-live="polite"></p>
+            <div class="flourish" aria-hidden="true">✦ ✧ ✦</div>
+            <section class="enigma-content">
+                <p class="intro">A cozinha do castelo é um abiente muito movimentado, o que às vezes deixa a cozinheira maluca e um tanto confusa.</p>
+                <p>Haveria um banquete no castelo e a cozinheira decidiu preparar uma deliciosa torta de bananas para a sobremesa. Ela pediu à ajudante que fosse até a despensa buscar os ingredientes.</p>
+                <p>Quando a ajudante foi à fruteira, percebeu que alguém já tinha passado por lá mais cedo. Ela voltou e disse para a cozinheira:</p>
+                <p><strong>Ajudante: </strong><i>Algum larápio passou pela despensa... Não temos mais bananas.</i></p>
+                <p><strong>Cozinheira: </strong><i>Que frutas temos então para preparar a torta para os convidados do Rei?</i></p>
+                <p><strong>Ajudante: </strong><i>Todas as frutas que sobraram, menos duas, são laranjas, todas menos duas são peras e todas menos duas são maçãs.</i></p>
+                <p>Quantas frutas restaram na despensa?</p>
+                <div style="text-align:center;" role="group" aria-label="Quantidade de frutas">
+                    <input data-answer-input class="number-box" inputmode="numeric" type="text" maxlength="4" pattern="[0-9]{1,4}"
+                        style="width: 200px;" autocomplete="off" placeholder="" aria-label="Quantidade de frutas">
+                </div>
+                <div id="lock-banner" class="status-banner" hidden role="status"></div>
+                <div class="answer-actions"><button id="submit-answer" class="gold-button">Enviar resposta</button>
+                </div>
+                <div id="sending-indicator" class="sending-indicator" hidden aria-label="Envio em andamento">
+                    <span></span>
+                </div>
+                <p id="message" class="message" role="status"></p>
+            </section>
+            <nav class="nav-pages"><a id="prev"></a><a id="index-link">Índice</a><a id="next"></a></nav>
+        </div>
+    </main>
+    <script type="module" src="enigma.js"></script>
+</body>
+
+</html>

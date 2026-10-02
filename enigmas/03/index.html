@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>A ordem dos símbolos · Livro dos Enigmas</title>
+    <title>A ordem da história · Livro dos Enigmas</title>
     <link rel="stylesheet" href="../../css/livro.css">
 </head>
 
@@ -17,26 +17,79 @@
             <p id="enigma-points" class="enigma-value" aria-live="polite"></p>
             <div class="flourish" aria-hidden="true">✦ ✧ ✦</div>
             <section class="enigma-content">
-                <p class="intro">Página piloto de ordenação. Arraste as peças ou use as setas no celular.</p>
-                <p>Disponha os símbolos na ordem em que a história os revelou: primeiro a noite, depois a luz, por fim o
-                    saber.</p>
+                <p class="intro">Toda história tem sua narrativa e os fatos ocorrem em uma determinada ordem.</p>
+                <p>Conforme "A Profecia dos Seis Escudos" ordene as palavras na ordem em que aparecem na história.</p>
                 <ol id="pieces" class="sort-list">
-                    <li class="sort-item" data-value="livro" data-answer-input draggable="true"><span
-                            class="symbol">▤</span>Livro <span class="sort-controls"><button type="button"
-                                aria-label="Mover livro para cima" data-move="up">↑</button><button type="button"
-                                aria-label="Mover livro para baixo" data-move="down">↓</button></span></li>
-                    <li class="sort-item" data-value="eclipse" data-answer-input draggable="true"><span
-                            class="symbol">◐</span>Eclipse <span class="sort-controls"><button type="button"
-                                aria-label="Mover eclipse para cima" data-move="up">↑</button><button type="button"
-                                aria-label="Mover eclipse para baixo" data-move="down">↓</button></span></li>
-                    <li class="sort-item" data-value="estrela" data-answer-input draggable="true"><span
-                            class="symbol">✦</span>Estrela <span class="sort-controls"><button type="button"
-                                aria-label="Mover estrela para cima" data-move="up">↑</button><button type="button"
-                                aria-label="Mover estrela para baixo" data-move="down">↓</button></span></li>
+                    <li class="sort-item" data-value="prata" data-answer-input draggable="true">
+                        <span class="symbol">◇</span>Prata
+                        <span class="sort-controls">
+                            <button type="button" aria-label="Mover Prata para cima" data-move="up">↑</button>
+                            <button type="button" aria-label="Mover Prata para baixo" data-move="down">↓</button>
+                        </span>
+                    </li>
+                    <li class="sort-item" data-value="eclipse" data-answer-input draggable="true">
+                        <span class="symbol">◐</span>Eclipse
+                        <span class="sort-controls">
+                            <button type="button" aria-label="Mover Eclipse para cima" data-move="up">↑</button>
+                            <button type="button" aria-label="Mover Eclipse para baixo" data-move="down">↓</button>
+                        </span>
+                    </li>
+                    <li class="sort-item" data-value="altar" data-answer-input draggable="true">
+                        <span class="symbol">▤</span>Altar
+                        <span class="sort-controls">
+                            <button type="button" aria-label="Mover Altar para cima" data-move="up">↑</button>
+                            <button type="button" aria-label="Mover Altar para baixo" data-move="down">↓</button>
+                        </span>
+                    </li>
+                    <li class="sort-item" data-value="profundezas" data-answer-input draggable="true">
+                        <span class="symbol">≋</span>Profundezas
+                        <span class="sort-controls">
+                            <button type="button" aria-label="Mover Profundezas para cima" data-move="up">↑</button>
+                            <button type="button" aria-label="Mover Profundezas para baixo" data-move="down">↓</button>
+                        </span>
+                    </li>
+                    <li class="sort-item" data-value="magia" data-answer-input draggable="true">
+                        <span class="symbol">✦</span>Magia
+                        <span class="sort-controls">
+                            <button type="button" aria-label="Mover Magia para cima" data-move="up">↑</button>
+                            <button type="button" aria-label="Mover Magia para baixo" data-move="down">↓</button>
+                        </span>
+                    </li>
+                    <li class="sort-item" data-value="muralhas" data-answer-input draggable="true">
+                        <span class="symbol">▥</span>Muralhas
+                        <span class="sort-controls">
+                            <button type="button" aria-label="Mover Muralhas para cima" data-move="up">↑</button>
+                            <button type="button" aria-label="Mover Muralhas para baixo" data-move="down">↓</button>
+                        </span>
+                    </li>
+                    <li class="sort-item" data-value="trofeu" data-answer-input draggable="true">
+                        <span class="symbol">♜</span>Troféu
+                        <span class="sort-controls">
+                            <button type="button" aria-label="Mover Troféu para cima" data-move="up">↑</button>
+                            <button type="button" aria-label="Mover Troféu para baixo" data-move="down">↓</button>
+                        </span>
+                    </li>
+                    <li class="sort-item" data-value="guerra" data-answer-input draggable="true">
+                        <span class="symbol">⚔</span>Guerra
+                        <span class="sort-controls">
+                            <button type="button" aria-label="Mover Guerra para cima" data-move="up">↑</button>
+                            <button type="button" aria-label="Mover Guerra para baixo" data-move="down">↓</button>
+                        </span>
+                    </li>
+                    <li class="sort-item" data-value="logica" data-answer-input draggable="true">
+                        <span class="symbol">⌘</span>Lógica
+                        <span class="sort-controls">
+                            <button type="button" aria-label="Mover Lógica para cima" data-move="up">↑</button>
+                            <button type="button" aria-label="Mover Lógica para baixo" data-move="down">↓</button>
+                        </span>
+                    </li>
                 </ol>
                 <div id="lock-banner" class="status-banner" hidden></div>
-                <div class="answer-actions"><button id="submit-answer" class="gold-button">Enviar resposta</button></div>
-                <div id="sending-indicator" class="sending-indicator" hidden aria-label="Envio em andamento"><span></span></div><p id="message" class="message" role="status"></p>
+                <div class="answer-actions"><button id="submit-answer" class="gold-button">Enviar resposta</button>
+                </div>
+                <div id="sending-indicator" class="sending-indicator" hidden aria-label="Envio em andamento">
+                    <span></span></div>
+                <p id="message" class="message" role="status"></p>
             </section>
             <nav class="nav-pages"><a id="prev"></a><a id="index-link">Índice</a><a id="next"></a></nav>
         </div>

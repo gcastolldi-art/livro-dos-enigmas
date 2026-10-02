@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>As abelhas · Livro dos Enigmas</title>
+    <link rel="stylesheet" href="../../css/livro.css">
+</head>
+
+<body data-enigma="5">
+    <main class="book page-shell">
+        <div class="book-inner">
+            <header class="page-head"><span class="page-count" id="page-count"></span><span class="team-label"
+                    id="team-label"></span></header>
+            <h1 class="page-title" id="book-title"></h1>
+            <p id="enigma-points" class="enigma-value" aria-live="polite"></p>
+            <div class="flourish" aria-hidden="true">✦ ✧ ✦</div>
+            <section class="enigma-content">
+                <p class="intro">Bjorn, o apicultor do Vilarejo e exímio fabricante de hidromel, passa horas observando
+                    as abelhas em seu jardim.</p>
+                <p>Certo dia, observando o vai e vem das abelhas de uma pequena colmeia, percebeu que dez delas voavam a
+                    esmo, sem pousar em nenhuma flor.</p>
+                <p>Intrigado com o que via, e atento ao restante do enxame, percebeu que um quinto das abelhas preferia
+                    as azaléias, um terço preferia as rosas, e um número
+                    equivalente a três vezes a diferença entre esses dois grupos preferia as margaridas.
+                </p>
+                <p>A partir das observações de Bjorn, e supondo que todas as abelhas, exceto a rainha, saem para voar
+                    durante o dia, quantas abelhas habitam a colmeia?</p>
+                <div style="text-align:center;" role="group" aria-label="Quantidade de abelhas">
+                    <input data-answer-input class="number-box" inputmode="numeric" type="text" maxlength="4" pattern="[0-9]{1,4}"
+                        style="width: 200px;" autocomplete="off" placeholder="" aria-label="Quantidade de abelhas">
+                </div>
+                <div id="lock-banner" class="status-banner" hidden role="status"></div>
+                <div class="answer-actions"><button id="submit-answer" class="gold-button">Enviar resposta</button>
+                </div>
+                <div id="sending-indicator" class="sending-indicator" hidden aria-label="Envio em andamento">
+                    <span></span>
+                </div>
+                <p id="message" class="message" role="status"></p>
+            </section>
+            <nav class="nav-pages"><a id="prev"></a><a id="index-link">Índice</a><a id="next"></a></nav>
+        </div>
+    </main>
+    <script type="module" src="enigma.js"></script>
+</body>
+
+</html>

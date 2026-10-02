@@ -17,7 +17,7 @@
   },
   {
     "id": 3,
-    "titulo": "A ordem dos símbolos",
+    "titulo": "A ordem da história",
     "pasta": "03",
     "tipo": "Ordenação",
     "ativo": true,
@@ -28,6 +28,46 @@
     "titulo": "A senha do cofre",
     "pasta": "04",
     "tipo": "Sequência",
+    "ativo": true,
+    "pontos": 1
+  },
+  {
+    "id": 5,
+    "titulo": "As abelhas",
+    "pasta": "05",
+    "tipo": "Texto",
+    "ativo": true,
+    "pontos": 1
+  },
+  {
+    "id": 6,
+    "titulo": "A torta de frutas",
+    "pasta": "06",
+    "tipo": "Texto",
+    "ativo": true,
+    "pontos": 1
+  },
+  {
+    "id": 7,
+    "titulo": "Vale o quanto pesa",
+    "pasta": "07",
+    "tipo": "Texto",
+    "ativo": true,
+    "pontos": 1
+  },
+  {
+    "id": 8,
+    "titulo": "Sarau de leitura",
+    "pasta": "08",
+    "tipo": "Escolha",
+    "ativo": true,
+    "pontos": 1
+  },
+  {
+    "id": 9,
+    "titulo": "O Calendário do Rei",
+    "pasta": "09",
+    "tipo": "Escolha",
     "ativo": true,
     "pontos": 1
   }

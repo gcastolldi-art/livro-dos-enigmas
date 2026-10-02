@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>O calendário · Livro dos Enigmas</title>
+    <link rel="stylesheet" href="../../css/livro.css">
+</head>
+
+<body data-enigma="9">
+    <main class="book page-shell">
+        <div class="book-inner">
+            <header class="page-head"><span class="page-count" id="page-count"></span><span class="team-label"
+                    id="team-label"></span></header>
+            <h1 class="page-title" id="book-title"></h1>
+            <p id="enigma-points" class="enigma-value" aria-live="polite"></p>
+            <div class="flourish" aria-hidden="true">✦ ✧ ✦</div>            
+            <section class="enigma-content">
+                <p class="intro">A gráfica do Reino produzia muitas publicações de grande valor artístico, além de eternizar as histórias contadas pelos antepassados em grandes livros ornamentados.</p>
+                <p>Chegando no mês de dezembro o dono da taberna encomendou à gráfica do Reino um Calendário do próximo ano para presentear seus clientes mais especiais.</p>
+                <p>O calendário deveria ter um mês por página e ser escrito com uma letra muito específica que a gráfica não tinha em seu acervo de tipos (peças de metal para impressão de letras individuais).</p>
+                <p>Coube ao tipógrafo encontrar uma solução para fabricar os tipos necessários gastando o mínimo possível.</p>
+                <p>Ele então resolveu escrever com essa nova letra somente os nomes dos meses por extenso, em letras maiúsculas, e usar no resto do calendário os tipos que já tinha no estoque.</p>
+                <p>Orgulhoso por ter descoberto a solução mais econômica que o permitiria imprimir o calendário, o tipógrafo apresentou aos colegas a quantidade mínima de tipos que precisaria fabricar.
+                </p>
+                <p>Quantos tipos são necessários?</p>
+                
+                <div class="choice-list" role="radiogroup" aria-label="Escolha um símbolo">
+                    <label class="choice"><input  data-answer-input type="radio" name="choice" value="24">24</label>
+                    <label class="choice"><input data-answer-input type="radio" name="choice" value="25">25</label>
+                    <label class="choice"><input data-answer-input type="radio" name="choice" value="26">26</label>
+                    <label class="choice"><input data-answer-input type="radio" name="choice" value="27">27</label>
+                    <label class="choice"><input data-answer-input type="radio" name="choice" value="28">28</label>
+                    <label class="choice"><input data-answer-input type="radio" name="choice" value="29">29</label>
+                </div>
+                <div id="lock-banner" class="status-banner" hidden></div>
+                <div class="answer-actions"><button id="submit-answer" class="gold-button">Enviar resposta</button></div>
+                <div id="sending-indicator" class="sending-indicator" hidden aria-label="Envio em andamento"><span></span></div><p id="message" class="message" role="status"></p>
+            </section>
+            <nav class="nav-pages"><a id="prev"></a><a id="index-link">Índice</a><a id="next"></a></nav>
+        </div>
+    </main>
+    <script type="module" src="enigma.js"></script>
+</body>
+
+</html>

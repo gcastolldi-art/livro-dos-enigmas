@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Vale o quanto pesa · Livro dos Enigmas</title>
+    <link rel="stylesheet" href="../../css/livro.css">
+</head>
+
+<body data-enigma="7">
+    <main class="book page-shell">
+        <div class="book-inner">
+            <header class="page-head"><span class="page-count" id="page-count"></span><span class="team-label"
+                    id="team-label"></span></header>
+            <h1 class="page-title" id="book-title"></h1>
+            <p id="enigma-points" class="enigma-value" aria-live="polite"></p>
+            <div class="flourish" aria-hidden="true">✦ ✧ ✦</div>
+            <section class="enigma-content">
+                <p class="intro">Aos sábados o mercado da aldeia é muito movimentado. Vários mercadores de todas as partes levam suas mercadorias para vender ou trocar.</p>
+                <p>Sobre a carroça de um mercador havia uma gaiola onde estavam uma galinha, uma cabra e um porco.</p>
+                <p>Uma aldeã se aproximou do mercador e disse:</p>
+                <p><strong>Aldeã: </strong><i>Eu quero comprar o porco. Quanto custa?</i></p>
+                <p><strong>Mercador: </strong><i>O preço do porco é cinco Coroas por quilo, mas estou sem balança para pesar.</i></p>
+                <p><strong>Aldeã: </strong><i>Poxa vida! Eu preciso muito comprar este porco. É o último da feira e preciso preparar os chouriços para o casamento de minha filha.</i></p>
+                <p><strong>Mercador: </strong><i>Não se preocupe senhora! Quando estávamos carregando os animais para trazer à feira, minha esposa me disse que
+                    a cabra e o porco pesavam 162 quilos a mais que a galinha e quando passei pelo portão da aldeia os guardas pesaram a gaiola
+                    com os três animais e disseram que o peso total era de 170 quilos. Além disso eu sei que a galinha tem um sexto do peso do porco.</i></p>
+                <p>Com essas informações, quantas Coroas a aldeã pagou pelo porco?</p>
+                <div style="text-align:center;" role="group" aria-label="Peso total dos animais">
+                    <input data-answer-input class="number-box" inputmode="numeric" type="text" maxlength="4" pattern="[0-9]{1,4}"
+                        style="width: 200px;" autocomplete="off" placeholder="" aria-label="Quantidade de frutas">
+                </div>
+                <div id="lock-banner" class="status-banner" hidden role="status"></div>
+                <div class="answer-actions"><button id="submit-answer" class="gold-button">Enviar resposta</button>
+                </div>
+                <div id="sending-indicator" class="sending-indicator" hidden aria-label="Envio em andamento">
+                    <span></span>
+                </div>
+                <p id="message" class="message" role="status"></p>
+            </section>
+            <nav class="nav-pages"><a id="prev"></a><a id="index-link">Índice</a><a id="next"></a></nav>
+        </div>
+    </main>
+    <script type="module" src="enigma.js"></script>
+</body>
+
+</html>
