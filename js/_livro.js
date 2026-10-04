@@ -15,19 +15,12 @@ function showPoints(value) { $('enigma-points').textContent = value == null ? 'P
 showPoints(item.pontos);
 if (session) decorateTeam($('team-label'), session.team, `Equipe ${session.team}`);
 
-// Preenche todos os menus, incluindo páginas antigas que usam IDs.
-const navigation = {
-  prev: { path: pos === 0 ? '../../indice.html' : `../${config[pos - 1].pasta}/`, label: pos === 0 ? '' : '← Anterior' },
-  next: { path: pos === config.length - 1 ? '../../indice.html' : `../${config[pos + 1].pasta}/`, label: pos === config.length - 1 ? '' : 'Próximo →' },
-  index: { path: '../../indice.html', label: 'Índice' }
-};
-for (const [name, entry] of Object.entries(navigation)) {
-  const legacyId = name === 'index' ? 'index-link' : name;
-  document.querySelectorAll(`[data-book-nav="${name}"], [id="${legacyId}"]`).forEach(element => {
-    element.href = linkWithAccess(entry.path, session);
-    element.textContent = entry.label;
-  });
-}
+$('prev').href = pos === 0 ? '../../indice.html' : `../${config[pos - 1].pasta}/`;
+$('prev').textContent = pos === 0 ? '' : '← Anterior';
+$('next').href = pos === config.length - 1 ? '../../indice.html' : `../${config[pos + 1].pasta}/`;
+$('next').textContent = pos === config.length - 1 ? '' : 'Próximo →';
+$('index-link').href = '../../indice.html';
+for (const element of [$('prev'), $('next'), $('index-link')]) element.href = linkWithAccess(element.getAttribute('href'), session);
 
 let locked = false, checking = false, sending = false, generation = 0, ownSubmitted = false;
 

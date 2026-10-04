@@ -535,7 +535,7 @@ button:disabled {
     white-space: nowrap;
     text-align: center;
     min-width: 25%;
-    font-size: clamp(.5rem, 2vw, 1rem);
+    font-size: clamp(.8rem, 2vw, 1rem);
     box-shadow: 0 4px 16px #000
 }
 
