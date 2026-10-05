@@ -36,7 +36,7 @@ const ENIGMAS_PADRAO = [
     "nome": "O valor da garrafa",
     "tipo": "escolha",
     "resposta": "2",
-    "pontos": 5,
+    "pontos": 10,
     "aliases": [
       "o-valor-da-garrafa",
       "selo-das-cores"
@@ -58,7 +58,7 @@ const ENIGMAS_PADRAO = [
     "nome": "A ordem da história",
     "tipo": "ordem",
     "resposta": "",
-    "pontos": 12,
+    "pontos": 10,
     "aliases": [
       "ordem-dos-simbolos"
     ]
@@ -68,7 +68,7 @@ const ENIGMAS_PADRAO = [
     "nome": "A senha do cofre",
     "tipo": "sequencia",
     "resposta": "13-21-13-21-32-21-12",
-    "pontos": 1,
+    "pontos": 10,
     "aliases": [
       "senha-do-cofre",
       "sequencia-dos-sete"
@@ -79,7 +79,7 @@ const ENIGMAS_PADRAO = [
     "nome": "As abelhas",
     "tipo": "valor",
     "resposta": "",
-    "pontos": 1,
+    "pontos": 10,
     "aliases": []
   },
   {
@@ -87,7 +87,7 @@ const ENIGMAS_PADRAO = [
     "nome": "A torta de frutas",
     "tipo": "valor",
     "resposta": "",
-    "pontos": 1,
+    "pontos": 10,
     "aliases": []
   },
   {
@@ -95,7 +95,7 @@ const ENIGMAS_PADRAO = [
     "nome": "Vale o quanto pesa",
     "tipo": "valor",
     "resposta": "",
-    "pontos": 1,
+    "pontos": 10,
     "aliases": []
   },
   {
@@ -103,7 +103,7 @@ const ENIGMAS_PADRAO = [
     "nome": "Sarau de leitura",
     "tipo": "escolha",
     "resposta": "",
-    "pontos": 1,
+    "pontos": 10,
     "aliases": []
   },
   {
@@ -111,7 +111,7 @@ const ENIGMAS_PADRAO = [
     "nome": "O Calendário do Rei",
     "tipo": "escolha",
     "resposta": "",
-    "pontos": 1,
+    "pontos": 10,
     "aliases": []
   },
   {
@@ -119,7 +119,7 @@ const ENIGMAS_PADRAO = [
     "nome": "Caça-palavras",
     "tipo": "texto",
     "resposta": "",
-    "pontos": 1,
+    "pontos": 10,
     "aliases": []
   },
   {
@@ -127,7 +127,7 @@ const ENIGMAS_PADRAO = [
     "nome": "Pagando o pato",
     "tipo": "valor",
     "resposta": "",
-    "pontos": 1,
+    "pontos": 10,
     "aliases": []
   },
   {
@@ -135,15 +135,15 @@ const ENIGMAS_PADRAO = [
     "nome": "Nazaré confusa",
     "tipo": "valor",
     "resposta": "",
-    "pontos": 1,
+    "pontos": 10,
     "aliases": []
   },
   {
     "id": 13,
-    "nome": "As diferenças ocultas",
-    "tipo": "localizar",
-    "resposta": "25",
-    "pontos": 25,
+    "nome": "A paisagem fragmentada",
+    "tipo": "montar",
+    "resposta": "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,0",
+    "pontos": 10,
     "aliases": []
   }
 ];
@@ -172,9 +172,9 @@ function configurarCatalogo_(ss,answers){
     const def=ENIGMAS_PADRAO.find(x=>x.id===id),e=oldEnigmas.get(id),k=oldKey.get(id);
     const nome=String((e&&e['Nome do enigma'])||(k&&k['Nome do enigma'])||(def&&def.nome)||'Enigma '+id);
     const previousType=canonicalType_(k&&k['Tipo']||e&&e['Tipo']||def&&def.tipo||'manual');
-    const tipo=def&&['valor','localizar'].includes(def.tipo)&&previousType==='texto'?def.tipo:previousType;
+    const tipo=def?def.tipo:previousType;
     enigmaRows.push([id,nome,e&&e['Ativo']!==undefined?e['Ativo']:true,tipo]);
-    keyRows.push([id,nome,tipo,def&&def.tipo==='localizar'&&previousType!=='localizar'?def.resposta:k?k['Resposta(s) aceita(s)']:(def?def.resposta:''),k?k['Pontos']:(def?def.pontos:0),k?k['Observações']||'':'']);
+    keyRows.push([id,nome,tipo,def&&def.tipo==='montar'&&previousType!=='montar'?def.resposta:def&&def.tipo==='localizar'&&previousType!=='localizar'?def.resposta:k?k['Resposta(s) aceita(s)']:(def?def.resposta:''),k?k['Pontos']:(def?def.pontos:0),k?k['Observações']||'':'']);
   });
   function write(name,headers,rows){let sheet=ss.getSheetByName(name);if(!sheet)sheet=ss.insertSheet(name);sheet.clearContents();sheet.getRange(1,1,rows.length+1,headers.length).setValues([headers,...rows]);sheet.setFrozenRows(1);}
   write('Enigmas',['ID do enigma','Nome do enigma','Ativo','Tipo'],enigmaRows);
@@ -270,7 +270,7 @@ function normalize_(value) {
   return String(value).normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().replace(/\s+/g,' ').toLowerCase();
 }
 
-const TIPOS_ENIGMA=['escolha','sequencia','ordem','texto','valor','localizar'];
+const TIPOS_ENIGMA=['escolha','sequencia','ordem','texto','valor','localizar','montar'];
 function canonicalType_(value){const name=normalize_(value);return {'multipla escolha':'escolha','ordenacao':'ordem','sequencia':'sequencia'}[name]||name;}
 function numericValue_(value){const text=String(value).trim().replace(',','.');return /^[+-]?(?:\d+(?:\.\d+)?|\.\d+)$/.test(text)&&Number.isFinite(Number(text))?Number(text):null;}
 function grade_(id,answer){
@@ -279,6 +279,14 @@ function grade_(id,answer){
   const type=canonicalType_(row['Tipo']),value=answerText_(answer);
   if(!TIPOS_ENIGMA.includes(type))return {result:'PENDENTE',points:0};
   if(value.length>1000)return {result:'INVALIDA',points:0};
+  if(type==='montar'){
+    const parts=value.split(',').map(x=>x.trim());
+    if(parts.length!==25||parts.some(x=>!/^\d+$/.test(x)))return {result:'INVALIDA',points:0};
+    const pieces=parts.map(Number);
+    if(new Set(pieces).size!==25||pieces.some(n=>n<0||n>24))return {result:'INVALIDA',points:0};
+    const correct=pieces.every((n,i)=>n===(i+1)%25);
+    return {result:correct?'CORRETA':'INCORRETA',points:correct?(Number(row['Pontos'])||0):0};
+  }
   if(type==='localizar'){
     const max=numericValue_(row['Resposta(s) aceita(s)']),count=numericValue_(value);
     if(max===null||!Number.isSafeInteger(max)||max<1)return {result:'PENDENTE',points:0};
@@ -382,4 +390,15 @@ function teamResults_(p){
       gabarito:key?String(key['Resposta(s) aceita(s)']||''):'',result:grade?grade.result:'NAO_RESPONDIDA',points:grade?grade.points:0};
   });
   return {ok:true,team,items,points:items.reduce((sum,item)=>sum+item.points,0)};
+}
+
+// Execute UMA VEZ para aplicar os 10 pontos solicitados na atualização.
+// configurarLivro preserva os pesos que forem ajustados depois.
+function aplicarAtualizacao282(){
+  configurarLivro();
+  const sheet=livroSpreadsheet_().getSheetByName('Gabarito');
+  if(sheet.getLastRow()<2)return;
+  const rows=sheet.getRange(2,1,sheet.getLastRow()-1,6).getValues();
+  rows.forEach((row,i)=>{if(ENIGMAS_PADRAO.some(x=>String(x.id)===enigmaId_(row[0])))sheet.getRange(i+2,5).setValue(10);});
+  recalcularGabarito();
 }
