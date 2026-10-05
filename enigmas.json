@@ -102,5 +102,13 @@
     "tipo": "montar",
     "ativo": true,
     "pontos": 10
-  }
+  },
+  {
+  "id": 14,
+  "titulo": "O galpão de João",
+  "pasta": "14",
+  "tipo": "valor",
+  "ativo": true,
+  "pontos": 10
+}
 ]

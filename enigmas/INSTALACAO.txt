@@ -1,0 +1,7 @@
+Copie a pasta 14 para enigmas/14 no projeto 2.8.2 corrigido.
+Acrescente o objeto de catalogo-14.json ao array de enigmas.json, separado por vírgula do item anterior.
+No Apps Script acrescente ao array ENIGMAS_PADRAO: {id:14,nome:"O galpão de João",tipo:"valor",resposta:"8",pontos:10,aliases:[]}.
+Execute configurarLivro para incluir o enigma 14. Não execute aplicarAtualizacao282 novamente, pois ela redefine os pontos de todos.
+Confira na aba Gabarito: ID 14, Tipo valor, Resposta(s) aceita(s) 8, Pontos 10.
+Publique uma nova versão da implantação existente e publique os arquivos do site.
+O gabarito não está no JavaScript da página. Solução para organização: 4 + 6*(2/3) = 8 metros.
