@@ -1,106 +1,17 @@
-.diff-tools {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-    margin: 20px 0
-}
+.puzzle{display:grid;grid-template-columns:repeat(5,1fr);width:min(100%,520px);aspect-ratio:1;margin:24px auto;gap:3px;padding:5px;background:#432c1c;border:2px solid #ad8151;border-radius:8px;touch-action:none}
+.puzzle-tile{min-width:0;min-height:0;padding:0;border:0;border-radius:3px;background-size:500% 500%;background-repeat:no-repeat;cursor:grab;user-select:none;-webkit-user-select:none}
+.puzzle-tile:focus-visible{outline:3px solid #ffd24c;outline-offset:-3px}.puzzle-tile:active{cursor:grabbing}.puzzle-tile:disabled{opacity:1;cursor:default}.puzzle-tile.empty{background:#2c1c13}
+.puzzle-status{text-align:center;min-height:2.6em}.nav-pages.nav-top{position:static;inset:auto;margin:16px 0 24px;padding:12px 0;border-top:1px solid #ad8151;border-bottom:1px solid #ad8151}
 
-.diff-tools button {
-    padding: 8px 12px;
-    border: 1px solid #967b55;
-    border-radius: 6px;
-    background: #f1e3c7;
-    color: #44331f;
-    cursor: pointer
-}
-
-.diff-boards {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px
-}
-
-.diff-label {
-    text-align: center;
-    font-weight: bold
-}
-
-.diff-viewport {
-    height: clamp(300px, 45vw, 300px);
-    width: 300px;
-    position: relative;
-    overflow: hidden;
-    border: 2px solid #997950;
-    border-radius: 5px;
-    background: #e4d6b9;
-    touch-action: none;
-    user-select: none
-}
-
-.scene {
-    position: absolute;
-    top: 0;
-    left: 0;
-    transform-origin: 0 0
-}
-
-.scene img {
-    width: 100%;
-    height: 100%;
-    display: block;
-    pointer-events: none
-}
-
-.scene .mark {
-    position: absolute;
-    transform: translate(-50%, -50%);
-    border: 3px solid #ff1ff4;
-    border-radius: 50%;
-    box-sizing: border-box;
-    pointer-events: none;
-    background: #26a85815;
-
-}
-
-.scene .wrong {
-    position: absolute;
-    transform: translate(-50%, -50%);
-    color: #e32323;
-    font: bold 48px/1 sans-serif;
-    text-shadow: 0 1px 3px white;
-    pointer-events: none
-}
-
-#hearts {
-    display: flex;
-    gap: 8px;
-    font-size: 36px;
-    line-height: 1
-}
-
-#hearts span {
-    text-shadow: 0 0 2px #463e36, 0 1px 2px #463e36
-}
-
-#hearts .lost {
-    opacity: .18
-}
-
-#diff-status {
+#puzzle-status {
     text-align: center;
     color: #8b3525;
     background: #f0d0b2;
-    border-color: #a7644a
-}
-
-@media(max-width:700px) {
-    .diff-boards {
-        grid-template-columns: 1fr
-    }
-
-    .diff-viewport {
-        height: clamp(210px, 33vh, 210px);
-        width: 210px;
-    }
+    border: 1px solid;
+    border-color: #a7644a;
+    padding: 12px 16px;
+    border-radius: 6px;
+    max-width: 520px;
+    margin: 16px auto 12px;
+    box-sizing: border-box;
 }

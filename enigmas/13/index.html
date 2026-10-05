@@ -4,9 +4,10 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>As diferenças ocultas · Livro dos Enigmas</title>
+    <title>A paisagem fragmentada · Livro dos Enigmas</title>
     <link rel="stylesheet" href="../../css/livro.css">
-<link rel="stylesheet" href="estilo.css"></head>
+<link rel="stylesheet" href="estilo.css">
+</head>
 
 <body data-enigma="13">
     <main class="book page-shell">
@@ -15,20 +16,17 @@
             <header class="page-head"><span class="page-count" id="page-count"></span><span class="team-label"
                     id="team-label"></span></header>
             <h1 class="page-title" id="book-title"></h1>
-            <div class="flourish" aria-hidden="true">✦ ✧ ✦</div>
             <p id="enigma-points" class="enigma-value" aria-live="polite"></p>
+            <div class="flourish" aria-hidden="true">✦ ✧ ✦</div>            
             <section class="enigma-content">
-                <p class="intro">Compare as duas imagens e marque as diferenças na segunda com dois cliques. Cuidado! Cada indicação incorreta custa uma vida.</p>
-                <div class="diff-tools"><div id="hearts" aria-label="3 vidas"></div><div><button id="minus" type="button" aria-label="Diminuir zoom">−</button><button id="reset" type="button">100%</button><button id="plus" type="button" aria-label="Aumentar zoom">+</button></div></div>
-                <p id="diff-status" role="status">Carregando imagens...</p>
-                <div class="diff-boards">
-                  <div><p class="diff-label">Imagem de referência</p><div id="ref" class="diff-viewport"><div class="scene"><img draggable="false" alt="Imagem de referência"></div></div></div>
-                  <div><p class="diff-label">Marque as diferenças aqui</p><div id="target" class="diff-viewport"><div class="scene"><img draggable="false" alt="Imagem para encontrar diferenças"></div></div></div>
-                </div>
-                <p class="small-note">Quando terminar, envie sua resposta.</p>
-                <div id="lock-banner" class="status-banner" hidden role="status"></div>
-                <div class="answer-actions"><button id="submit-answer" class="gold-button">Enviar resposta</button></div>
-                <div id="sending-indicator" class="sending-indicator" hidden aria-label="Envio em andamento"><span></span></div><p id="message" class="message" role="status"></p>
+                <p class="intro">Os dias ensolarados convidam para um passeio pelas trilhas do Reino.</p>
+                <p>Reconstrua a paisagem. Clique ou arraste uma peça vizinha para o espaço vazio.</p>
+                <p id="puzzle-status" class="puzzle-status" role="status" aria-live="polite">Embaralhando as peças...</p>
+                <div id="puzzle" class="puzzle" data-image="imagem.png" role="group" aria-label="Quebra-cabeça deslizante de cinco por cinco"></div>
+                <div id="lock-banner" class="status-banner" hidden></div>
+                <div class="answer-actions"><button id="submit-answer" class="gold-button" disabled>Enviar resposta</button></div>
+                <div id="sending-indicator" class="sending-indicator" hidden><span></span></div>
+                <p id="message" class="message" role="status"></p>
             </section>
             <nav class="nav-pages"><a id="prev"></a><a id="index-link">Índice</a><a id="next"></a></nav>
         </div>

@@ -97,10 +97,10 @@
   },
   {
     "id": 13,
-    "titulo": "As diferenças ocultas",
+    "titulo": "A paisagem fragmentada",
     "pasta": "13",
-    "tipo": "localizar",
+    "tipo": "montar",
     "ativo": true,
-    "pontos": 25
+    "pontos": 10
   }
 ]
