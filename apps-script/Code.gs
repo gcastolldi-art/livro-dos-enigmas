@@ -206,14 +206,14 @@ function doGet(e) {
     try {
       const ss=livroSpreadsheet_();
       const ready=['Equipes','Enigmas','Respostas','Gabarito'].every(name=>!!ss.getSheetByName(name));
-      health={ok:ready,version:'2.8',message:ready?'Conexão com a planilha funcionando.':'Execute configurarLivro para criar as abas.'};
-    } catch(error) {health={ok:false,version:'2.8',error:String(error.message||error)};}
+      health={ok:ready,version:'2.8.2',message:ready?'Conexão com a planilha funcionando.':'Execute configurarLivro para criar as abas.'};
+    } catch(error) {health={ok:false,version:'2.8.2',error:String(error.message||error)};}
     return ContentService.createTextOutput(JSON.stringify(health)).setMimeType(ContentService.MimeType.JSON);
   }
   if (!/^__bookCallback_[0-9]+_[0-9]+$/.test(callback))
     return ContentService.createTextOutput('Callback inválido').setMimeType(ContentService.MimeType.TEXT);
   let result;
-  try { result=p.action==='control'?control_(p):p.action==='setState'?setState_(p):p.action==='teamResults'?teamResults_(p):status_(p); }
+  try { result=p.action==='submit'?submit_(p):p.action==='control'?control_(p):p.action==='setState'?setState_(p):p.action==='teamResults'?teamResults_(p):status_(p); }
   catch(err) { result={ok:false,error:String(err.message||err)}; }
   const json=JSON.stringify(result).replace(/</g,'\\u003c').replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029');
   return ContentService.createTextOutput(callback+'('+json+');').setMimeType(ContentService.MimeType.JAVASCRIPT);
@@ -324,13 +324,13 @@ function submit_(p) {
     const sh=livroSpreadsheet_().getSheetByName('Respostas');
     const rows=sh.getDataRange().getValues().slice(1);
     const existing=rows.find(r=>r[0]===gameId&&r[1]===team&&enigmaId_(r[2])===id);
-    if(existing) return {ok:true,accepted:false};
+    if(existing) return {ok:true,submitted:true,accepted:String(existing[6])===requestId,requestId:String(existing[6])};
     if(gameState_(gameId)!=='receiving')throw new Error('O prazo para responder os enigmas acabou!');
     const grade=grade_(id,answer);
     if(grade.result==='INVALIDA')throw new Error('Resposta inválida para o tipo do enigma ou fora do limite do gabarito.');
     sh.appendRow([gameId,team,Number(id),safeCell_(player),safeCell_(answerText_(answer)),new Date(),requestId,grade.result,grade.points]);
     SpreadsheetApp.flush();
-    return {ok:true,accepted:true};
+    return {ok:true,submitted:true,accepted:true,requestId};
   } finally {lock.releaseLock();}
 }
 

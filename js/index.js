@@ -1,5 +1,5 @@
 import {decorateTeam} from './equipe.js';
-import {query} from './api.js';
+import {query,saveStatus,getCachedStatus} from './api.js';
 import {resolveAccess,linkWithAccess} from './acesso.js';
 const $=id=>document.getElementById(id);
 async function loadIndex(){
@@ -11,8 +11,8 @@ async function loadIndex(){
     const response=await fetch('enigmas.json',{cache:'no-store'});
     if(!response.ok)throw new Error('Não foi possível carregar o catálogo dos enigmas.');
     const index=(await response.json()).filter(item=>item.ativo);
-    let result;
-    try{result=await query('status',{team:access.team,code:access.code});if(!result.ok)throw new Error(result.error||'Acesso inválido.');}
+    let result=getCachedStatus();
+    try{result=await query('status',{team:access.team,code:access.code});if(!result.ok)throw new Error(result.error||'Acesso inválido.');saveStatus(result);}
     catch(error){$('index-status').textContent=`Não foi possível atualizar as respostas: ${error.message}`;}
     const list=$('index-list');list.replaceChildren();
     for(const [i,item] of index.entries()){
@@ -36,5 +36,3 @@ async function loadIndex(){
   finally{$('index-loading').hidden=true;}
 }
 loadIndex();
-
-setInterval(()=>{if(!document.hidden)loadIndex();},15000);

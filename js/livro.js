@@ -1,6 +1,6 @@
 import { resolveAccess, linkWithAccess } from './acesso.js';
 import { decorateTeam } from './equipe.js';
-import { query, submitAnswer } from './api.js';
+import { query, submitAnswer, getCachedStatus, saveStatus } from './api.js';
 const config = await fetch('../../enigmas.json').then(r => r.json()).then(items => items.filter(x => x.ativo));
 const id = document.body.dataset.enigma;
 const pos = config.findIndex(x => String(x.id) === id);
@@ -65,8 +65,10 @@ export async function send(answer) {
     display(result.status);
   } catch (e) {
     $('message').textContent = e.message;
-    sending = false; await refreshStatus();
+    sending = false;
+    $('submit-answer').disabled = locked;
+    if(!locked)$('message').textContent += ' Se o envio não foi confirmado, volte ao índice para verificar antes de tentar novamente.';
   } finally { sending = false; $('sending-indicator').hidden = true; }
 }
-await refreshStatus();
-setInterval(refreshStatus, 8000);
+const cached=getCachedStatus();
+display({...cached,submitted:!!cached?.answers?.[id]});

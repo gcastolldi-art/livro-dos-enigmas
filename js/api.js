@@ -27,30 +27,24 @@ function queryOnce(action, fields = {}) {
   });
 }
 
-export async function query(action, fields = {}) {
-  try { return await queryOnce(action,fields); }
-  catch(error) {
-    if (!error.retryable) throw error;
-    return queryOnce(action,fields);
-  }
-}
-
-export async function submitAnswer(enigmaId, answer) {
-  if (!API_URL) throw new Error('Configure API_URL em js/config.js para ativar o jogo.');
-  const session = getSession();
-  if (!session) throw new Error('Abra o livro e identifique-se antes de responder.');
-  const requestId = crypto.randomUUID?.() || `${Date.now()}-${Math.random()}`;
-  const value=answer && typeof answer==='object' && !Array.isArray(answer) && Object.prototype.hasOwnProperty.call(answer,'valor') ? answer.valor : answer;
-  const body = new URLSearchParams({action:'submit', gameId:GAME_ID, enigmaId, answer:JSON.stringify(value), requestId, ...session});
-  // Apps Script não fornece um CORS API convencional; o resultado da gravação é
-  // confirmado por consulta posterior ao servidor, nunca por sucesso local.
-  await fetch(API_URL, {method:'POST', mode:'no-cors', body});
-  for (let attempt=0; attempt<7; attempt++) {
-    await new Promise(resolve => setTimeout(resolve, 1100));
-    const status = await query('status', {team:session.team, code:session.code, enigmaId});
-    if (!status.ok) throw new Error(status.error || 'Falha ao consultar resposta.');
-    if (!status.submitted && status.state && status.state!=='receiving') throw new Error('O prazo para responder os enigmas acabou!');
-    if (status.submitted) return {accepted:status.requestId === requestId, status};
-  }
-  throw new Error('Não foi possível confirmar o registro. Verifique o estado da questão antes de tentar novamente.');
+export function query(action, fields = {}) { return queryOnce(action,fields); }
+const STATUS_KEY='livro-status-v282';
+const statusIdentity=()=>{const s=getSession();return s?`${GAME_ID}:${s.team}:${s.code}`:'';};
+let cachedStatus=null;
+export function getCachedStatus(){try{const saved=JSON.parse(sessionStorage.getItem(STATUS_KEY));if(saved?.identity===statusIdentity())return saved.status;}catch{}return cachedStatus?.identity===statusIdentity()?cachedStatus.status:null;}
+export function saveStatus(status){cachedStatus={identity:statusIdentity(),status};try{sessionStorage.setItem(STATUS_KEY,JSON.stringify(cachedStatus));}catch{}}
+const pendingRequests=new Map();
+export async function submitAnswer(enigmaId,answer){
+ const session=getSession();if(!session)throw new Error('Abra o link da equipe antes de responder.');
+ const value=answer&&typeof answer==='object'&&!Array.isArray(answer)&&Object.prototype.hasOwnProperty.call(answer,'valor')?answer.valor:answer;
+ const requestKey=`${statusIdentity()}:${enigmaId}`;
+ const requestId=pendingRequests.get(requestKey)||globalThis.crypto?.randomUUID?.()||`${Date.now()}-${Math.random()}`;
+ pendingRequests.set(requestKey,requestId);
+ const result=await query('submit',{...session,enigmaId,answer:JSON.stringify(value),requestId});
+ if(!result.ok)throw new Error(result.error||'Não foi possível enviar a resposta.');
+ if(!result.submitted)throw new Error('Atualize a implantação do Apps Script para a versão 2.8.2.');
+ const cached=getCachedStatus()||{state:'receiving',answers:{}};
+ saveStatus({...cached,answers:{...cached.answers,[enigmaId]:true}});
+ pendingRequests.delete(requestKey);
+ return {accepted:result.accepted,status:{...cached,submitted:true,requestId:result.requestId}};
 }
