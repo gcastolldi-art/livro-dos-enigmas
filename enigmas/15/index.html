@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Enigma do Oriente · Livro dos Enigmas</title>
+    <link rel="stylesheet" href="../../css/livro.css">
+    <style>
+        .figure {
+            margin: 28px auto;
+            max-width: 460px;
+            text-align: center
+        }
+
+        .figure img {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+
+        .enigma-content blockquote {
+            margin: 10px 0;
+            padding: 5px 10px;
+            border-left: 3px solid #9c7339;
+            font-style: italic
+        }
+
+        .sequence-instruction {
+            text-align: center;
+            margin: 28px 0 18px
+        }
+
+        .number-sequence-10 {
+            grid-template-columns: repeat(10, minmax(0, 1fr));
+        }
+
+        @media (max-width: 600px) {
+            .number-sequence-10 {
+                grid-template-columns: repeat(5, minmax(0, 1fr));
+            }
+        }
+    </style>
+</head>
+
+<body data-enigma="15">
+    <main class="book page-shell">
+        <div class="book-inner">
+            <nav class="nav-pages nav-top"><a id="prev"></a><a id="index-link">Índice</a><a id="next"></a></nav>
+            <header class="page-head"><span class="page-count" id="page-count"></span><span class="team-label"
+                    id="team-label"></span></header>
+            <h1 class="page-title" id="book-title"></h1>
+            <p id="enigma-points" class="enigma-value" aria-live="polite"></p>
+            <div class="flourish" aria-hidden="true">✦ ✧ ✦</div>
+            <section class="enigma-content">
+                <p class="intro">Em dias de paz, o Rei adorava passar o tempo resolvendo Sudoku, os chamados "Enigmas do Oriente".</p>
+                <p>Ele se divertia com o jogo de números, mas também os usava para testar a inteligência de seus súditos.</p>
+                <blockquote>"Ao primeiro cavaleiro que resolver o Sudoku e me disser a soma dos números das diagonais, darei a mão da minha filha em casamento!"</blockquote>
+                <figure class="figure"><img src="sudoku.png" width="100%"></figure>
+                <div style="text-align:center;" role="group" aria-label="Soma dos números das diagonais">
+                    <input data-answer-input class="number-box" inputmode="numeric" type="text" maxlength="4" pattern="[0-9]{1,4}"
+                        style="width: 200px;" autocomplete="off" placeholder="" aria-label="Soma dos números das diagonais">
+                </div>
+                <div id="lock-banner" class="status-banner" hidden role="status"></div>
+                <div class="answer-actions"><button id="submit-answer" class="gold-button">Enviar resposta</button>
+                </div>
+                <div id="sending-indicator" class="sending-indicator" hidden aria-label="Envio em andamento">
+                    <span></span>
+                </div>
+                <p id="message" class="message" role="status"></p>
+            </section>
+            <nav class="nav-pages"><a id="prev"></a><a id="index-link">Índice</a><a id="next"></a></nav>
+        </div>
+    </main>
+    <script type="module" src="enigma.js"></script>
+</body>
+
+</html>
