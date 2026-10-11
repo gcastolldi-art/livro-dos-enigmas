@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>A senha do baú encantado · Livro dos Enigmas</title>
+    <link rel="stylesheet" href="../../css/livro.css?v=2.8.2">
+    <link rel="stylesheet" href="estilo.css?v=16.1">
+</head>
+
+<body data-enigma="16">
+    <main class="book page-shell">
+        <div class="book-inner">
+            <nav class="nav-pages nav-top"><a id="prev"></a><a id="index-link">Índice</a><a id="next"></a></nav>
+            <header class="page-head"><span class="page-count" id="page-count"></span><span class="team-label"
+                    id="team-label"></span></header>
+            <h1 class="page-title" id="book-title">O Novo Jogo do Rei</h1>
+            <p id="enigma-points" class="enigma-value" aria-live="polite">10 pontos</p>
+            <div class="flourish" aria-hidden="true">✦ ✧ ✦</div>
+            <section class="enigma-content">
+                <p class="intro">Os jogos de salão eram uma das diversões favoritas do rei. Um dia, durante uma reunião
+                    no castelo, ele anunciou:</p>
+                <blockquote class="king-speech">
+                    <p>“Acabo de inventar um jogo. Seu nome é <strong>SENHA</strong>!</p>
+                    <p>Em um velho navio naufragado, foi encontrado um baú repleto de tesouros. Porém, para abri-lo, é
+                        preciso quebrar o feitiço que o lacra. Ao pronunciar a palavra correta, ele se abre.</p>
+                    <p><strong>COPO</strong> abre o baú, mas <strong>TAÇA</strong> não abre.</p>
+                    <p><strong>MEIO</strong> abre o baú, e <strong>INTEIRO</strong> também, mas <strong>METADE</strong>
+                        não abre.</p>
+                    <p><strong>VELA</strong> não abre, tampouco <strong>CERA</strong>, porém <strong>FOGO</strong>
+                        abre.”</p>
+                </blockquote>
+                <fieldset class="word-options">
+                    <legend>Quais destas palavras abririam o baú encantado?</legend>
+                    <p id="selection-help">Marque todas as opções que você considera corretas.</p>
+                    <div class="word-grid">
+                        <label class="word-option" for="word-1"><input id="word-1" type="checkbox" name="palavras"
+                                value="1" data-answer-input aria-describedby="selection-help"><span>1.
+                                BALEIA</span></label>
+                        <label class="word-option" for="word-2"><input id="word-2" type="checkbox" name="palavras"
+                                value="2" data-answer-input aria-describedby="selection-help"><span>2.
+                                TESOURO</span></label>
+                        <label class="word-option" for="word-3"><input id="word-3" type="checkbox" name="palavras"
+                                value="3" data-answer-input aria-describedby="selection-help"><span>3.
+                                ESPADA</span></label>
+                        <label class="word-option" for="word-4"><input id="word-4" type="checkbox" name="palavras"
+                                value="4" data-answer-input aria-describedby="selection-help"><span>4.
+                                DONZELA</span></label>
+                        <label class="word-option" for="word-5"><input id="word-5" type="checkbox" name="palavras"
+                                value="5" data-answer-input aria-describedby="selection-help"><span>5.
+                                OURO</span></label>
+                        <label class="word-option" for="word-6"><input id="word-6" type="checkbox" name="palavras"
+                                value="6" data-answer-input aria-describedby="selection-help"><span>6.
+                                PEIXE</span></label>
+                        <label class="word-option" for="word-7"><input id="word-7" type="checkbox" name="palavras"
+                                value="7" data-answer-input aria-describedby="selection-help"><span>7.
+                                ELMO</span></label>
+                        <label class="word-option" for="word-8"><input id="word-8" type="checkbox" name="palavras"
+                                value="8" data-answer-input aria-describedby="selection-help"><span>8.
+                                ARMADURA</span></label>
+                        <label class="word-option" for="word-9"><input id="word-9" type="checkbox" name="palavras"
+                                value="9" data-answer-input aria-describedby="selection-help"><span>9.
+                                ESQUELETO</span></label>
+                        <label class="word-option" for="word-10"><input id="word-10" type="checkbox" name="palavras"
+                                value="10" data-answer-input aria-describedby="selection-help"><span>10.
+                                CAVEIRA</span></label>
+                    </div>
+                </fieldset>
+                <div id="lock-banner" class="status-banner" hidden role="status"></div>
+                <div class="answer-actions"><button id="submit-answer" class="gold-button" type="button">Enviar resposta</button></div>
+                <div id="sending-indicator" class="sending-indicator" hidden aria-label="Envio em andamento">
+                    <span></span></div>
+                <p id="message" class="message" role="status"></p>
+            </section>
+            <nav class="nav-pages"><a id="prev"></a><a id="index-link">Índice</a><a id="next"></a></nav>
+        </div>
+    </main>
+    <script type="module" src="enigma.js?v=16.1"></script>
+</body>
+
+</html>
