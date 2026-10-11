@@ -1,0 +1,8 @@
+.nav-top{position:static;inset:auto;margin:0 0 1.2rem}
+.value-answer{display:flex;flex-direction:column;align-items:center;gap:.7rem;margin:1.5rem 0}
+#answer-value{width:6rem;max-width:100%;text-align:center;font-size:1.5rem}
+#game-feedback{text-align:center;padding:.8rem;border:1px solid #a7644a;border-radius:.4rem;background:#f0d0b2;color:#8b3525}
+#game-feedback.success{color:#21633b;background:#dcebdc;border-color:#639675}
+#attempts,#guess-history{text-align:center}
+#guess-history{overflow-wrap:anywhere;font-size:.9rem}
+#storage-warning{color:#8b3525}

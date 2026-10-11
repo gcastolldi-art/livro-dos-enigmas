@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>As ovelhas desaparecidas · Livro dos Enigmas</title>
+    <link rel="stylesheet" href="../../css/livro.css?v=2.8.2">
+    <link rel="stylesheet" href="estilo.css?v=17.2">
+</head>
+
+<body data-enigma="17">
+    <main class="book page-shell">
+        <div class="book-inner">
+            <nav class="nav-pages nav-top" aria-label="Navegação superior"><a data-book-nav="prev"></a><a
+                    data-book-nav="index">Índice</a><a data-book-nav="next"></a></nav>
+            <header class="page-head"><span class="page-count" id="page-count"></span><span class="team-label"
+                    id="team-label"></span></header>
+            <h1 class="page-title" id="book-title">As ovelhas desaparecidas</h1>
+            <p id="enigma-points" class="enigma-value" aria-live="polite">10 pontos</p>
+            <div class="flourish" aria-hidden="true">✦ ✧ ✦</div>
+            <section class="enigma-content">
+                <p class="intro">Ao amanhecer, Tomás soltou suas ovelhas no pasto do vilarejo. Quando as recolheu para o
+                    estábulo, ao cair da tarde, contou o rebanho e percebeu que algumas estavam faltando.</p>
+                <p>Enquanto os ajudantes procuravam pelo campo, Tomás propôs um desafio: descobrir quantas ovelhas não
+                    haviam voltado. A cada palpite, ele diria se o número informado era maior ou menor que a quantidade
+                    desaparecida.</p>
+                <p class="question"><strong>Quantas ovelhas estão faltando?</strong></p>
+                <p>Digite um número de 1 a 99. Você tem 10 tentativas.</p>
+                <div class="value-answer"><label for="answer-value">Seu palpite</label><input id="answer-value"
+                        data-answer-input class="number-box" type="text" inputmode="numeric" maxlength="2"
+                        autocomplete="off" aria-label="Número de ovelhas desaparecidas, de 1 a 99"></div>
+                <p id="attempts">Tentativas: 0 de 10</p>
+                <p id="game-feedback" role="status" aria-live="polite">Digite seu primeiro palpite.</p>
+                <p id="guess-history"></p>
+                <p id="storage-warning" hidden>Não foi possível salvar as tentativas neste navegador. Mantenha esta
+                    página aberta para preservar o progresso.</p>
+                <div id="lock-banner" class="status-banner" hidden role="status"></div>
+                <div class="answer-actions"><button id="submit-answer" class="gold-button" type="button">Tentar
+                        número</button></div>
+                <div id="sending-indicator" class="sending-indicator" hidden aria-label="Envio em andamento">
+                    <span></span></div>
+                <p id="message" class="message" role="status"></p>
+            </section>
+            <nav class="nav-pages" aria-label="Navegação inferior"><a data-book-nav="prev"></a><a
+                    data-book-nav="index">Índice</a><a data-book-nav="next"></a></nav>
+        </div>
+    </main>
+    <script type="module" src="enigma.js?v=17.2"></script>
+</body>
+
+</html>
