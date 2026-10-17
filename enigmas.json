@@ -142,5 +142,13 @@
   "tipo": "sequencia",
   "ativo": true,
   "pontos": 10
+  },
+  {
+  "id": 19,
+  "titulo": "A Balança do Mestre Construtor",
+  "pasta": "19",
+  "tipo": "sequencia",
+  "ativo": true,
+  "pontos": 10
   }
 ]

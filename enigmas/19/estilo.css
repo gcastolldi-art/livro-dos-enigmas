@@ -1,0 +1,6 @@
+.nav-top{position:static;inset:auto;margin:0 0 1.2rem}
+.balance-figure,.operation-figure{margin:1.2rem auto;width:100%;max-width:680px}
+.balance-figure img,.operation-figure img{display:block;width:100%;height:auto}
+.value-answer{display:flex;flex-direction:column;align-items:center;gap:.7rem;margin:1.5rem 0;text-align:center}
+.value-answer .number-box{box-sizing:border-box;width:8rem;max-width:100%;text-align:center;color:#633d28}
+.question{text-align:center}
