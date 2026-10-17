@@ -1,5 +1,5 @@
 export const SECRET_NUMBER=32; // Altere também o gabarito no Apps Script.
-export const MAX_ATTEMPTS=10;
+export const MAX_ATTEMPTS=7;
 export function initialState(){return {attempts:0,guesses:[],pending:null,confirmed:false};}
 export function play(state,number){
  if(state.pending!==null||state.confirmed||state.attempts>=MAX_ATTEMPTS)return {state,kind:'blocked'};

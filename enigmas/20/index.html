@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>A Sobremesa da Rainha · Livro dos Enigmas</title>
+    <link rel="stylesheet" href="../../css/livro.css?v=2.8.2">
+    <link rel="stylesheet" href="estilo.css?v=19.1">
+</head>
+
+<body data-enigma="20">
+    <main class="book page-shell">
+        <div class="book-inner">
+            <nav class="nav-pages nav-top" aria-label="Navegação superior"><a data-book-nav="prev"></a><a
+                    data-book-nav="index">Índice</a><a data-book-nav="next"></a></nav>
+            <header class="page-head"><span class="page-count" id="page-count"></span><span class="team-label"
+                    id="team-label"></span></header>
+            <h1 class="page-title" id="book-title">A Sobremesa da Rainha</h1>
+            <p id="enigma-points" class="enigma-value" aria-live="polite">10 pontos</p>
+            <div class="flourish" aria-hidden="true">✦ ✧ ✦</div>
+            <section class="enigma-content">
+                <p class="intro">A Rainha tem um gosto muito peculiar para sobremesas.</p>
+                <p>Ela adora jujubas e sempre pede para que seus súditos tragam as mais coloridas e saborosas.</p>        
+                <figure class="candy-figure"><img src="jujubas.png" height="300px"></figure>
+                <p>Quantas jujubas tem no pote?</p>
+                <div class="value-answer"><label for="answer-value">Digite o resultado da operação.</label><input
+                        id="answer-value" class="number-box" data-answer-input type="text" inputmode="numeric"
+                        autocomplete="off" maxlength="6" aria-label="Senha numérica do cofre"></div>
+                <div id="lock-banner" class="status-banner" hidden role="status"></div>
+                <div class="answer-actions"><button id="submit-answer" class="gold-button" type="button">Enviar
+                        resposta</button></div>
+                <div id="sending-indicator" class="sending-indicator" hidden aria-label="Envio em andamento">
+                    <span></span></div>
+                <p id="message" class="message" role="status"></p>
+            </section>
+            <nav class="nav-pages" aria-label="Navegação inferior"><a data-book-nav="prev"></a><a
+                    data-book-nav="index">Índice</a><a data-book-nav="next"></a></nav>
+        </div>
+    </main>
+    <script type="module" src="enigma.js?v=19.1"></script>
+</body>
+
+</html>

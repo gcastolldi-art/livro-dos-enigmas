@@ -44,7 +44,7 @@ function render(){
 async function finish(){
  if(busy||locked||state.confirmed||state.pending===null)return;
  busy=true;render();
- say(state.pending==='00'?'As 10 tentativas acabaram. Aguarde...':'Você acertou! Enviando resposta...');
+ say(state.pending==='00'?'As 7 tentativas se esgotaram. Aguarde...':'Você acertou! Enviando resposta...');
  try{
   await send(state.pending);
   if(getCachedStatus()?.answers?.['17']){
