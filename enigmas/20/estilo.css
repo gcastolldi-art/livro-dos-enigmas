@@ -6,14 +6,15 @@
 
 .candy-figure,
 .operation-figure {
-    margin: 1.2rem auto;
-    width: 80%;
+    margin: auto;
+    width: 90%;
     max-width: 680px
 }
 
 .candy-figure img,
 .operation-figure img {
     display: block;
+    margin: auto;
     width: 80%;
     height: auto
 }
